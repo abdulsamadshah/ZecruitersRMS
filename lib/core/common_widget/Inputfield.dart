@@ -31,9 +31,7 @@ Widget textfield(BuildContext context,
     onFieldSubmitted: onFieldSubmitted,
     inputFormatters: inputFormatters,
     focusNode: focusNode,
-    fillColor:  context.isDarkMode
-        ? ToggleThemeData.backgroundBlack
-        : const Color(0xffF4F4F4),
+    fillColor:  Colors.white,
     context,
 
 suffix: suffix,

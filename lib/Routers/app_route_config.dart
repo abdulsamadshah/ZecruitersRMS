@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zecruiters_rms/presentation/screen/Dashboard/Dashboard.dart';
+import 'package:zecruiters_rms/presentation/screen/Detail/JobDetailScreen.dart';
+import 'package:zecruiters_rms/presentation/screen/Detail/MisDetailScreen.dart';
 
 import 'app_route_constants.dart';
 
@@ -44,6 +46,27 @@ class MyAppRouter {
               pageBuilder: (context, state) {
                 return MaterialPage(
                   child: const Dashboard(),
+                );
+              },
+            ),
+
+            GoRoute(
+              name: MyAppRouteConstants.JobdetailScreen,
+              path: '/Jobdetail',
+              pageBuilder: (context, state) {
+                return const MaterialPage(
+                  child: Jobdetail(),
+                );
+              },
+            ),
+
+
+            GoRoute(
+              name: MyAppRouteConstants.Misdetailscreen,
+              path: '/Misdetail',
+              pageBuilder: (context, state) {
+                return const MaterialPage(
+                  child: Misdetailscreen(),
                 );
               },
             ),

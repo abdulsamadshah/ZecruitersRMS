@@ -40,7 +40,7 @@ class MyAppTheme {
       double? cursorHeight,
       double? width,
       String? initialValue,
-      Color? fillColor,
+      Color? fillColor=Colors.white,
       bool? filled,
       bool isRequired = false,
       GlobalKey? key,

@@ -38,6 +38,8 @@ dependencies:
   easy_stepper: ^0.8.3
   dropdown_search: ^5.0.6
   otp_autofill: ^3.0.2
+  url_launcher: ^6.1.10
+  font_awesome_flutter: ^10.4.0
 
 
 

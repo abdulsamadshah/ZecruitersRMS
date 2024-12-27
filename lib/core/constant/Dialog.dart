@@ -10,17 +10,17 @@ import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 import '../../../gen/fonts.gen.dart';
 
-class Dialogbox {
+class DialogBox {
   static Future<void> confirmationDialog(BuildContext context,
       {String? title,
-      String? desc,
-      String lefButtonName = "NO",
-      String rightButtonName = "YES",
-      void Function()? rejectonOntap,
-      acceptOntap}) {
+        String? desc,
+        String lefButtonName = "NO",
+        String rightButtonName = "YES",
+        void Function()? leftButtonOntap,
+        rightButtonOntap}) {
     return showCupertinoDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.w),
@@ -40,16 +40,16 @@ class Dialogbox {
                 desc == null
                     ? const SizedBox()
                     : reausabletext(
-                        desc.tr,
-                        fontfamily: FontFamily.interMedium,
-                        fontsize: 13,
-                      ),
+                  desc.tr,
+                  fontfamily: FontFamily.interMedium,
+                  fontsize: 13,
+                ),
               ],
             ),
           ),
           actions: <Widget>[
             CupertinoDialogAction(
-              onPressed: rejectonOntap,
+              onPressed: leftButtonOntap,
               child: reausabletext(
                 lefButtonName.tr,
                 color: context.isDarkMode
@@ -59,7 +59,7 @@ class Dialogbox {
               ),
             ),
             CupertinoDialogAction(
-              onPressed: acceptOntap,
+              onPressed: rightButtonOntap,
               child: reausabletext(rightButtonName.tr,
                   color: ToggleThemeData.Appcolor, fontsize: 16),
             ),

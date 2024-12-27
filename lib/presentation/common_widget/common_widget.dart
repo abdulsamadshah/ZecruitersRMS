@@ -26,7 +26,7 @@ Widget reausableIcon(
   );
 }
 
-AppBar JobAppbar(
+AppBar appBar(
     BuildContext context, {
       void Function()? onback,
       String? title,
@@ -155,7 +155,7 @@ Widget reausablebuttons(
 }
 
 Widget reausabletext(String title,
-    {int fontsize = 20,
+    {int fontsize = 15,
       Color? color,
       String fontfamily = "geographeditwebbold",
       FontWeight? fontweight,

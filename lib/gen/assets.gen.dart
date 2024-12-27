@@ -48,6 +48,10 @@ class $AssetImagesGen {
   AssetGenImage get steptwoillustrator =>
       const AssetGenImage('asset/images/steptwoillustrator.png');
 
+  /// File path: asset/images/whatsapp.png
+  AssetGenImage get whatsapp =>
+      const AssetGenImage('asset/images/whatsapp.png');
+
   /// File path: asset/images/youtube.png
   AssetGenImage get youtube => const AssetGenImage('asset/images/youtube.png');
 
@@ -63,6 +67,7 @@ class $AssetImagesGen {
         profileui,
         serverError,
         steptwoillustrator,
+        whatsapp,
         youtube
       ];
 }
