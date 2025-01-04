@@ -14,9 +14,9 @@ class AppServices {
 
     // if (Global.storageServices.get(SecureSharedPreference.deviceToken) !=
     //     null ) {
-    //   GoRouter.of(context).goNamed(MyAppRouteConstants.dashBoardScreen);
+      GoRouter.of(context).goNamed(MyAppRouteConstants.dashBoardScreen);
     // } else {
-      GoRouter.of(context).goNamed(MyAppRouteConstants.loginScreen);
+    //   GoRouter.of(context).goNamed(MyAppRouteConstants.loginScreen);
     // }
   }
 

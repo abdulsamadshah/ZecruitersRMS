@@ -1,192 +1,193 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/common_widget/appBar.dart';
+import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
+import 'package:zecruiters_rms/presentation/screen/Detail/Candidate/CandidateList.dart';
+import 'package:zecruiters_rms/presentation/screen/Widget/JD_Widget.dart';
 
-import '../../../data/models/UserModel.dart';
-import '../../common_widget/common_widget.dart';
+import 'Candidate/CandidateDetail.dart';
 
-class Jobdetail extends StatefulWidget {
-  const Jobdetail({super.key});
+class JobDetail extends StatefulWidget {
+  const JobDetail({Key? key}) : super(key: key);
 
   @override
-  State<Jobdetail> createState() => _JobdetailState();
+  State<JobDetail> createState() => _JobDetailState();
 }
 
-class _JobdetailState extends State<Jobdetail> {
-  List<UserModel> dummyUsers = [
-    UserModel(
-      name: "Samad",
-      email: "sabdulsamad272@gmail.com",
-      mobileNumber: "7249303582",
-      whatsappNumber: "7249303582",
-    ),
-    UserModel(
-      name: "Bob Johnson",
-      email: "bob.johnson@example.com",
-      mobileNumber: "2345678901",
-      whatsappNumber: "2345678901",
-    ),
-    UserModel(
-      name: "Charlie Brown",
-      email: "charlie.brown@example.com",
-      mobileNumber: "3456789012",
-      whatsappNumber: "3456789012",
-    ),
-    UserModel(
-      name: "Diana Prince",
-      email: "diana.prince@example.com",
-      mobileNumber: "4567890123",
-      whatsappNumber: "4567890123",
-    ),
-    UserModel(
-      name: "Ethan Hunt",
-      email: "ethan.hunt@example.com",
-      mobileNumber: "5678901234",
-      whatsappNumber: "5678901234",
-    ),
-    UserModel(
-      name: "Fiona Gallagher",
-      email: "fiona.gallagher@example.com",
-      mobileNumber: "6789012345",
-      whatsappNumber: "6789012345",
-    ),
-    UserModel(
-      name: "George Michael",
-      email: "george.michael@example.com",
-      mobileNumber: "7890123456",
-      whatsappNumber: "7890123456",
-    ),
-    UserModel(
-      name: "Hannah Montana",
-      email: "hannah.montana@example.com",
-      mobileNumber: "8901234567",
-      whatsappNumber: "8901234567",
-    ),
-    UserModel(
-      name: "Isaac Newton",
-      email: "isaac.newton@example.com",
-      mobileNumber: "9012345678",
-      whatsappNumber: "9012345678",
-    ),
-    UserModel(
-      name: "Julia Roberts",
-      email: "julia.roberts@example.com",
-      mobileNumber: "0123456789",
-      whatsappNumber: "0123456789",
-    ),
+class _JobDetailState extends State<JobDetail> {
+  final List<Map<String, dynamic>> tableData = [
+    {
+      "JD Id": "Z-2937",
+      "Sourced": 13,
+      "Pending": 0,
+      "In Process": 3,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },
+    {
+      "JD Id": "Z-2936",
+      "Sourced": 26,
+      "Pending": 2,
+      "In Process": 19,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },  {
+      "JD Id": "Z-2937",
+      "Sourced": 13,
+      "Pending": 0,
+      "In Process": 3,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },
+    {
+      "JD Id": "Z-2936",
+      "Sourced": 26,
+      "Pending": 2,
+      "In Process": 19,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },  {
+      "JD Id": "Z-2937",
+      "Sourced": 13,
+      "Pending": 0,
+      "In Process": 3,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },
+    {
+      "JD Id": "Z-2936",
+      "Sourced": 26,
+      "Pending": 2,
+      "In Process": 19,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },  {
+      "JD Id": "Z-2937",
+      "Sourced": 13,
+      "Pending": 0,
+      "In Process": 3,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },
+    {
+      "JD Id": "Z-2936",
+      "Sourced": 26,
+      "Pending": 2,
+      "In Process": 19,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },  {
+      "JD Id": "Z-2937",
+      "Sourced": 13,
+      "Pending": 0,
+      "In Process": 3,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },
+    {
+      "JD Id": "Z-2936",
+      "Sourced": 26,
+      "Pending": 2,
+      "In Process": 19,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },  {
+      "JD Id": "Z-2937",
+      "Sourced": 13,
+      "Pending": 0,
+      "In Process": 3,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },
+    {
+      "JD Id": "Z-2936",
+      "Sourced": 26,
+      "Pending": 2,
+      "In Process": 19,
+      "Shortlisted": 0,
+      "L2 Pending": 0,
+      "Uploader": "View"
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: mainAppBar(context, title: "JD Detail", type: "basic"),
-      body: ListView.builder(
-        physics: const ClampingScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: dummyUsers.length,
-        itemBuilder: (ctx, index) {
-          final user = dummyUsers[index];
-
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16.r),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: Padding(
+        padding: EdgeInsets.all(8.0.r),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Scrollable Header
+              Container(
+                height: 50.h,
+                color: Colors.black,
+                child: Row(
                   children: [
-                    reausabletext(
-                      'Name: ${user.name}',
-                      fontsize: 15,
-                      fontweight: FontWeight.bold,
-                    ),
-                    SizedBox(height: 8.h),
-                    reausabletext(
-                      'Email: ${user.email}',
-                      fontsize: 13,
-                      color: Colors.grey[700],
-                    ),
-                    SizedBox(height: 4.h),
-                    reausabletext(
-                      'Mobile: ${user.mobileNumber}',
-                      fontsize: 13,
-                      color: Colors.grey[700],
-                    ),
-                    SizedBox(height: 4.h),
-                    reausabletext(
-                      'WhatsApp: ${user.whatsappNumber ?? "N/A"}',
-                      fontsize: 13,
-                      color: Colors.grey[700],
-                    ),
-                    SizedBox(height: 8.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            String url = "tel:${user.mobileNumber}";
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            } else {
-                              throw 'Could not make the phone call.';
-                            }
-                          },
-                          icon: reausableIcon(
-                              icon: Icons.call, color: Colors.white, size: 25),
-                          label: reausabletext(
-                            'Call',
-                            fontsize: 13,
-                            color: Colors.white,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            String url = "https://wa.me/${user.whatsappNumber}";
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            } else {
-                              throw 'Could not open WhatsApp.';
-                            }
-                          },
-                          icon: reausableIcon(
-                              icon: FontAwesomeIcons.whatsapp,
-                              color: Colors.white,
-                              size: 25),
-                          label: reausabletext(
-                            'WhatsApp',
-                            fontsize: 13,
-                            color: Colors.white,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    buildHeaderCell("JD Id", 80),
+                    buildHeaderCell("Sourced", 80),
+                    buildHeaderCell("Pending", 80),
+                    buildHeaderCell("In Process", 100),
+                    buildHeaderCell("Shortlisted", 100),
+                    buildHeaderCell("L2 Pending", 100),
+                    buildHeaderCell("Uploader", 100),
                   ],
                 ),
               ),
-            ),
-          );
-        },
+              // Scrollable Body
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: tableData.map((row) {
+                      return Container(
+                        height: 50.h,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            buildBodyCell(row["JD Id"].toString(), 80),
+                            buildBodyCell(row["Sourced"].toString(), 80),
+                            buildBodyCell(row["Pending"].toString(), 80),
+                            buildBodyCell(row["In Process"].toString(), 100),
+                            buildBodyCell(row["Shortlisted"].toString(), 100),
+                            buildBodyCell(row["L2 Pending"].toString(), 100),
+                            buildUploaderCell(
+                                context, row["Uploader"].toString(), 100,onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) =>  CandidateListScreen(),));
+                                },),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
+
+
 }
+
+

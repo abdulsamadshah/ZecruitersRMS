@@ -55,7 +55,7 @@ class MyAppRouter {
               path: '/Jobdetail',
               pageBuilder: (context, state) {
                 return const MaterialPage(
-                  child: Jobdetail(),
+                  child: JobDetail(),
                 );
               },
             ),
