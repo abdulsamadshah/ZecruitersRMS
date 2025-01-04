@@ -1,6 +1,9 @@
 
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zecruiters_rms/core/constant/SecureSharedPref.dart';
+import 'package:zecruiters_rms/data/models/PersonalDetail_Res.dart';
 
 
 
@@ -52,5 +55,13 @@ class StorageServices {
 
   String? get(String key) {
     return _prefs.getString(key);
+  }
+
+
+
+  ProfileData getProfileData() {
+    Map<String, dynamic> jsondatais =
+    jsonDecode(_prefs.getString('profileData')!);
+    return ProfileData.fromJson(jsondatais);
   }
 }

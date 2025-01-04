@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:zecruiters_rms/Routers/app_route_constants.dart';
 import 'package:zecruiters_rms/core/constant/Dialog.dart';
 import 'package:zecruiters_rms/core/constant/appTheme.dart';
+import 'package:zecruiters_rms/core/constant/global.dart';
 import 'package:zecruiters_rms/gen/fonts.gen.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 import 'package:zecruiters_rms/presentation/screen/Dashboard/NavigationBar.dart';
@@ -129,7 +130,7 @@ class _HomeState extends State<Dashboard> {
                         fontsize: 30,
                         color: ToggleThemeData.white,
                         fontweight: FontWeight.w800),
-                    reausabletext("Samad" ?? "",
+                    reausabletext("${Global.storageServices.getProfileData().firstName.toString() ?? ""} ${Global.storageServices.getProfileData().lastName.toString() ?? ""}",
                         fontfamily: FontFamily.interMedium,
                         fontsize: 20,
                         color: ToggleThemeData.white),

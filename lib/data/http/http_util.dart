@@ -28,6 +28,7 @@ class HttpUtil {
     try {
       api.sendRequest.options.headers['accept'] = 'application/json';
       api.sendRequest.options.headers['content-type'] = 'application/json';
+      api.sendRequest.options.headers['content-type'] = 'application/x-www-form-urlencoded';
       var response = await api.sendRequest.post(path,
           data: type == "formdata" ? formdata : data,
           queryParameters: queryParameteres);

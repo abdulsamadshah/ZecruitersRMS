@@ -6,7 +6,7 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 const Color primaryColor = Color(0xFF7B61FF);
 const double defaultPadding = 16.0;
-var BaseUrl = "http://192.168.0.102:3000/api/v1";
+var BaseUrl = "https://www.rms.zecruiters.com/api";
 
 var ImagenotFound =
     "https://thumbs.dreamstime.com/b/computer-logo-pc-logo-vector-computer-logo-pc-logo-vector-142583250.jpg";
@@ -14,7 +14,7 @@ var ImagenotFound =
 class Constant {
   static String Baseurl = "$BaseUrl";
 
-  static String imageBaseUrl = "http://192.168.0.102:3000/";
+  static String imageBaseUrl = "https://www.rms.zecruiters.com/";
   static BaseOptions networkOptions = BaseOptions(
     receiveTimeout: const Duration(seconds: 15),
     connectTimeout: const Duration(seconds: 15),

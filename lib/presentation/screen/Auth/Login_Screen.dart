@@ -39,103 +39,100 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SignInBloc, SignInState>(
-      bloc: loginBloc,
-      builder: (context, state) {
-        return Scaffold(
-          body: SafeArea(
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Stack(
-                children: [
-                  Container(
-                    height: 200.h,
-                    width: double.maxFinite,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(0.r),
-                      color: ToggleThemeData.Appcolor,
-                    ),
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Stack(
+            children: [
+              Container(
+                height: 200.h,
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(0.r),
+                  color: ToggleThemeData.Appcolor,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 30.h,
+                      ),
+                      reausabletext("Login",
+                          color: Colors.white,
+                          fontfamily: FontFamily.interBold,
+                          fontsize: 30),
+                      SizedBox(
+                        height: 5.h,
+                      ),
+                      reausabletext("Welcome to Zecruiters RMS",
+                          color: Colors.white,
+                          fontfamily: FontFamily.interRegular,
+                          fontsize: 18)
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 140.h,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ToggleThemeData.white,
+                    borderRadius: BorderRadius.circular(30.r),
+                  ),
+                  child: Form(
+                    key: _logInKey,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      padding: EdgeInsets.only(
+                          left: 15.w, top: 10.h, right: 15.w),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          assetImage(Assets.images.appicon.path,
+                              width: 250, height: 150),
                           SizedBox(
-                            height: 30.h,
+                            height: 50.h,
                           ),
-                          reausabletext("Login",
-                              color: Colors.white,
-                              fontfamily: FontFamily.interBold,
-                              fontsize: 30),
+                          title('Company Id'),
+                          textfield(
+                            context,
+                            hintname: "Enter Company Id",
+                            prefixicon: Icons.cabin,
+                            onChanged: (value) {
+                              loginBloc
+                                  .add(companyIdEvent(value.toString()));
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Company Id is required";
+                              }
+                              return null;
+                            },
+                          ),
                           SizedBox(
-                            height: 5.h,
+                            height: 15.h,
                           ),
-                          reausabletext("Welcome to Zecruiters RMS",
-                              color: Colors.white,
-                              fontfamily: FontFamily.interRegular,
-                              fontsize: 18)
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: 140.h,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ToggleThemeData.white,
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      child: Form(
-                        key: _logInKey,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: 15.w, top: 10.h, right: 15.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              assetImage(Assets.images.appicon.path,
-                                  width: 250, height: 150),
-                              SizedBox(
-                                height: 50.h,
-                              ),
-                              title('Company Id'),
-                              textfield(
-                                context,
-                                hintname: "Enter Company Id",
-                                prefixicon: Icons.cabin,
-                                onChanged: (value) {
-                                  loginBloc
-                                      .add(companyIdEvent(value.toString()));
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Company Id is required";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              SizedBox(
-                                height: 15.h,
-                              ),
-                              title('Email Id'),
-                              textfield(
-                                context,
-                                hintname: "Enter Email Id",
-                                prefixicon: Icons.email,
-                                onChanged: (value) {
-                                  loginBloc.add(emailIdEvent(value.toString()));
-                                },
-                                validator: Validator.validateEmail,
-                              ),
-                              SizedBox(
-                                height: 15.h,
-                              ),
-                              title('Password'),
-                              textfield(context,
-                                  hintname: "Enter Password",
-                                  prefixicon: Icons.lock, onChanged: (value) {
+                          title('Email Id'),
+                          textfield(
+                            context,
+                            hintname: "Enter Email Id",
+                            prefixicon: Icons.email,
+                            onChanged: (value) {
+                              loginBloc.add(emailIdEvent(value.toString()));
+                            },
+                            validator: Validator.validateEmail,
+                          ),
+                          SizedBox(
+                            height: 15.h,
+                          ),
+                          title('Password'),
+                          textfield(context,
+                              hintname: "Enter Password",
+                              prefixicon: Icons.lock, onChanged: (value) {
                                 loginBloc.add(passwordEvent(value.toString()));
                               }, validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -143,29 +140,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                                 return null;
                               }),
-                            ],
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-          bottomNavigationBar: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 15.h),
-            child: reausablebuttons(
-                title: "Login",
-                ontap: () {
-                  if (_logInKey.currentState!.validate()) {
-                    GoRouter.of(context)
-                        .goNamed(MyAppRouteConstants.dashBoardScreen);
-                  }
-                }),
-          ),
-        );
-      },
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 15.h),
+        child: reausablebuttons(
+            title: "Login",
+            ontap: () {
+              if (_logInKey.currentState!.validate()) {
+                loginBloc.add(LoginEvent(context,));
+              }
+            }),
+      ),
     );
   }
 
