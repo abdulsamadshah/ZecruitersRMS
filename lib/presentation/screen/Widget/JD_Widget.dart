@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zecruiters_rms/data/models/JDListResponse.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 Widget buildHeaderCell(String title, int width) {
@@ -24,7 +25,8 @@ Widget buildBodyCell(String title, int width) {
   );
 }
 
-Widget buildUploaderCell(BuildContext context, String title, double width,{void Function()? onTap}) {
+Widget buildUploaderCell(BuildContext context, String title, double width,
+    {void Function()? onTap}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
@@ -39,3 +41,4 @@ Widget buildUploaderCell(BuildContext context, String title, double width,{void 
     ),
   );
 }
+

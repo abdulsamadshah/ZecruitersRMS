@@ -2,6 +2,7 @@
 
 import 'package:zecruiters_rms/core/Utils/Context_Utility.dart';
 import 'package:zecruiters_rms/logic/bloc/SignIn/sign_in_bloc.dart';
+import 'package:zecruiters_rms/logic/bloc/jd_detail_cubit.dart';
 import 'package:zecruiters_rms/presentation/screen/Application/splashscreen.dart';
 import 'package:zecruiters_rms/presentation/screen/Auth/Login_Screen.dart';
 import 'package:flutter/material.dart';
@@ -54,9 +55,16 @@ class MyAppRouter {
               name: MyAppRouteConstants.JobdetailScreen,
               path: '/Jobdetail',
               pageBuilder: (context, state) {
-                return const MaterialPage(
-                  child: JobDetail(),
+                return MaterialPage(
+                  child: BlocProvider(
+                    create: (context) => JdDetailCubit(),
+                    child: const JobDetail(),
+                  ),
                 );
+
+                //   const MaterialPage(
+                //   child: JobDetail(),
+                // );
               },
             ),
 

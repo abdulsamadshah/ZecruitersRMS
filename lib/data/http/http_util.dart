@@ -27,6 +27,8 @@ class HttpUtil {
         String? type}) async {
     try {
       api.sendRequest.options.headers['accept'] = 'application/json';
+      api.sendRequest.options.headers["authorization"] = "${Global.storageServices.get(SecureSharedPreference.deviceToken)}";
+
       api.sendRequest.options.headers['content-type'] = 'application/json';
       api.sendRequest.options.headers['content-type'] = 'application/x-www-form-urlencoded';
       var response = await api.sendRequest.post(path,
@@ -69,7 +71,7 @@ class HttpUtil {
   Future<dynamic> get(String path,
       {Map<String, dynamic>? data, String? LogOuttype}) async {
     try {
-      api.sendRequest.options.headers["authorization"] = "Bearer ${Global.storageServices.get(SecureSharedPreference.deviceToken)}";
+      api.sendRequest.options.headers["authorization"] = "${Global.storageServices.get(SecureSharedPreference.deviceToken)}";
       api.sendRequest.options.headers['accept'] = 'application/json';
       api.sendRequest.options.headers['content-type'] = 'application/json';
       var response = await api.sendRequest.get(path, queryParameters: data);
