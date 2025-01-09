@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zecruiters_rms/presentation/screen/Dashboard/Dashboard.dart';
-import 'package:zecruiters_rms/presentation/screen/Detail/JobDetailScreen.dart';
+import 'package:zecruiters_rms/presentation/screen/Detail/JD/JDScreen.dart';
 import 'package:zecruiters_rms/presentation/screen/Detail/MisDetailScreen.dart';
 
 import 'app_route_constants.dart';

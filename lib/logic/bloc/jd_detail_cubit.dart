@@ -14,7 +14,15 @@ class JdDetailCubit extends Cubit<JdDetailState> {
   Future<void> getJDListData() async {
     try {
       emit(LoadingState());
-      var result = await JdDetail_Repo.getJD_Detail();
+      var data = {
+        'companyid':
+            Global.storageServices.get(SecureSharedPreference.companyId),
+        'userid': Global.storageServices.getProfileData().loingId.toString(),
+        'access_rights':
+            Global.storageServices.getProfileData().accessRights.toString(),
+        'jdstatus': 1
+      };
+      var result = await JdDetail_Repo.getJD_Detail(data);
       if (result.status == true) {
         emit(JdDetailLoadingSuccess(listData: result.data));
       } else {
@@ -29,9 +37,11 @@ class JdDetailCubit extends Cubit<JdDetailState> {
     try {
       emit(LoadingState());
       var data = {
-        'companyid': Global.storageServices.get(SecureSharedPreference.companyId),
-        'userid': Global.storageServices.getProfileData().userId.toString(),
-        'access_rights': Global.storageServices.getProfileData().accessRights.toString(),
+        'companyid':
+            Global.storageServices.get(SecureSharedPreference.companyId),
+        'userid': Global.storageServices.getProfileData().loingId.toString(),
+        'access_rights':
+            Global.storageServices.getProfileData().accessRights.toString(),
         'jdid': jdid
       };
       var result = await JdDetail_Repo.getJobDetail(param: data);

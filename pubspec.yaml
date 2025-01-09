@@ -43,6 +43,7 @@ dependencies:
   flutter_phone_direct_caller: ^2.1.1
   phone_state: ^2.1.1
   path_provider: ^2.0.13
+  flutter_widget_from_html: ^0.15.3
 
 
 

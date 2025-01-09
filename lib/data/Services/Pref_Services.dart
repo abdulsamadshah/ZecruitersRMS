@@ -11,7 +11,7 @@ class Pref_Services {
   void saveProfileData(ProfileData? data) {
     try {
       ProfileData userdata = ProfileData(
-          userId: data!.userId,
+          loingId: data!.loingId,
           empId: data.emailId,
           emailId: data.emailId,
           firstName: data.firstName,

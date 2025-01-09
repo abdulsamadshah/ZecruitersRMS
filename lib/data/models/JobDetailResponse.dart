@@ -1,7 +1,7 @@
 class JDDetailResponse {
   bool? status;
   String? response;
-  List<JD_DetailData>? data;
+  List<Job_DetailData>? data;
 
   JDDetailResponse({this.status, this.response, this.data});
 
@@ -9,9 +9,9 @@ class JDDetailResponse {
     status = json['status'];
     response = json['response'];
     if (json['data'] != null) {
-      data = <JD_DetailData>[];
+      data = <Job_DetailData>[];
       json['data'].forEach((v) {
-        data!.add(new JD_DetailData.fromJson(v));
+        data!.add(new Job_DetailData.fromJson(v));
       });
     }
   }
@@ -27,7 +27,7 @@ class JDDetailResponse {
   }
 }
 
-class JD_DetailData {
+class Job_DetailData {
   String? jdId;
   String? jdNcandidates;
   String? jdGender;
@@ -50,7 +50,7 @@ class JD_DetailData {
   String? departmentSUbCategoryMasterName;
   String? departmentSubFunctionsName;
 
-  JD_DetailData(
+  Job_DetailData(
       {this.jdId,
       this.jdNcandidates,
       this.jdGender,
@@ -73,7 +73,7 @@ class JD_DetailData {
       this.departmentSUbCategoryMasterName,
       this.departmentSubFunctionsName});
 
-  JD_DetailData.fromJson(Map<String, dynamic> json) {
+  Job_DetailData.fromJson(Map<String, dynamic> json) {
     jdId = json['jd_id'];
     jdNcandidates = json['jd_ncandidates'];
     jdGender = json['jd_gender'];

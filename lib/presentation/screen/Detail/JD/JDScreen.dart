@@ -6,9 +6,10 @@ import 'package:zecruiters_rms/core/common_widget/appBar.dart';
 import 'package:zecruiters_rms/data/models/JDListResponse.dart';
 import 'package:zecruiters_rms/logic/bloc/jd_detail_cubit.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
+import 'package:zecruiters_rms/presentation/screen/Detail/Candidate/CandidateList.dart';
 import 'package:zecruiters_rms/presentation/screen/Widget/JD_Widget.dart';
 
-import 'Candidate/JobDetailScreen.dart';
+import 'JobDetailScreen.dart';
 
 class JobDetail extends StatefulWidget {
   const JobDetail({super.key});
@@ -29,7 +30,7 @@ class _JobDetailState extends State<JobDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mainAppBar(context, title: "JD Detail", type: "basic"),
+      appBar: mainAppBar(context, title: "JD List", type: "basic"),
       body: Padding(
           padding: EdgeInsets.all(8.0.r),
           child: BlocConsumer<JdDetailCubit, JdDetailState>(
@@ -135,11 +136,73 @@ class _JobDetailState extends State<JobDetail> {
                     ));
               },
               child: buildBodyCell(row?.jDID?.toString() ?? "-", 80)),
-          buildBodyCell(row?.sOURCED?.toString() ?? "-", 80),
-          buildBodyCell(row?.pENDING?.toString() ?? "-", 80),
-          buildBodyCell(row?.iNPROCESS?.toString() ?? "-", 100),
-          buildBodyCell(row?.sHORTLIST?.toString() ?? "-", 100),
-          buildBodyCell(row?.l2PENDING?.toString() ?? "-", 100),
+          InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CandidateListScreen(
+                        jdId: row!.jDID.toString(),
+                        listType: 1,
+                      ),
+                    ));
+              },
+              child: buildBodyCell(row?.sOURCED?.toString() ?? "-", 80)),
+          InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CandidateListScreen(
+                        jdId: row!.jDID.toString(),
+                        listType: 2,
+                      ),
+                    ));
+              },
+              child: buildBodyCell(row?.pENDING?.toString() ?? "-", 80)),
+
+
+                    InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CandidateListScreen(
+                        jdId: row!.jDID.toString(),
+                        listType: 3,
+                      ),
+                    ));
+              },
+              child: buildBodyCell(row?.iNPROCESS?.toString() ?? "-", 80)),
+
+          InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CandidateListScreen(
+                        jdId: row!.jDID.toString(),
+                        listType: 4,
+                      ),
+                    ));
+              },
+              child: buildBodyCell(row?.sHORTLIST?.toString() ?? "-", 100)),
+
+
+          InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CandidateListScreen(
+                        jdId: row!.jDID.toString(),
+                        listType: 5,
+                      ),
+                    ));
+              },
+              child: buildBodyCell(row?.l2PENDING?.toString() ?? "-", 100)),
+
+
           buildBodyCell(row?.cLIENTNAME?.toString() ?? "-", 200),
           buildBodyCell(row?.dESIGNATION?.toString() ?? "-", 200),
         ],

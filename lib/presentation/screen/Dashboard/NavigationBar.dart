@@ -6,9 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zecruiters_rms/Routers/app_route_constants.dart';
 import 'package:zecruiters_rms/core/constant/Dialog.dart';
+import 'package:zecruiters_rms/core/constant/SecureSharedPref.dart';
 import 'package:zecruiters_rms/core/constant/appTheme.dart';
+import 'package:zecruiters_rms/core/constant/global.dart';
 import 'package:zecruiters_rms/core/constant/utility.dart';
 import 'package:zecruiters_rms/core/theme/themes_data.dart';
+import 'package:zecruiters_rms/data/Services/Pref_Services.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 import '../../../gen/fonts.gen.dart';
@@ -72,16 +75,18 @@ class _NavigationbarState extends State<Navigationbar> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             reausabletext(
-                              "Samad",
+                              "${Global.storageServices.getProfileData().firstName.toString() ?? ""} ${Global.storageServices.getProfileData().lastName.toString() ?? ""}",
                               fontfamily: FontFamily.interBold,
                               fontsize: 20,
+                              widths: 160,
                               color: ToggleThemeData.white,
                               fontweight: FontWeight.w800,
                             ),
                             reausabletext(
-                              "7249303582",
+                              Global.storageServices.getProfileData().emailId.toString() ?? "",
                               fontfamily: FontFamily.interRegular,
                               fontsize: 14,
+                              widths: 160,
                               color: ToggleThemeData.white,
                             ),
                           ],
@@ -134,11 +139,12 @@ class _NavigationbarState extends State<Navigationbar> {
                       onTap: () {
                         DialogBox.confirmationDialog(context,
                             title: 'Are you sure?',
-                            desc: "Do you really want to Delete?",
+                            desc: "Do you really want to Logout?",
                             leftButtonOntap: () {
                           Navigator.pop(context);
                         }, rightButtonOntap: () {
                           Navigator.pop(context);
+                          Global.storageServices.remove(SecureSharedPreference.deviceToken);
                           GoRouter.of(context)
                               .goNamed(MyAppRouteConstants.loginScreen);
                         });

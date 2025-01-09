@@ -5,8 +5,8 @@ import 'package:zecruiters_rms/data/models/JDListResponse.dart';
 
 class JdDetail_Repo{
 
-  static Future<JDResponse> getJD_Detail() async {
-    var response = await HttpUtil().post("/Zecapis/jdlist");
+  static Future<JDResponse> getJD_Detail(var data) async {
+    var response = await HttpUtil().post("/Zecapis/jdlist",data: data);
     return JDResponse.fromJson(response);
   }
 

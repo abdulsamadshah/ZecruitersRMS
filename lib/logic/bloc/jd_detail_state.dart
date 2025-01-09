@@ -3,11 +3,11 @@ part of 'jd_detail_cubit.dart';
 @immutable
 class JdDetailState {
   final List<JDData>? listData;
-  JD_DetailData? detail;
+  Job_DetailData? detail;
   final String? error;
    JdDetailState({this.listData, this.error,this.detail});
 
-  JdDetailState copyWith({List<JDData>? listData, String? error,JD_DetailData? detail}) {
+  JdDetailState copyWith({List<JDData>? listData, String? error,Job_DetailData? detail}) {
     return JdDetailState(
         listData: listData ?? this.listData, error: error ?? this.error,detail: detail ?? this.detail);
   }

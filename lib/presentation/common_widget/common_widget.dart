@@ -204,7 +204,7 @@ Widget EmptyDataPng({String? iconname}) {
 }
 
 Widget LostinternetConnection(
-    {String? showbutton, void Function()? retry, required String messgae,MainAxisAlignment mainAxisAlignment=MainAxisAlignment.center,}) {
+    {String? showbutton, void Function()? retry, required String messgae}) {
   return Align(
     alignment: Alignment.center,
     child: Center(
@@ -213,11 +213,9 @@ Widget LostinternetConnection(
         //------------------------ Internet Lost ------------------ //
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: mainAxisAlignment,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              Assets.images.lostInternets.path,
-            ),
+            Image.asset(Assets.images.lostInternets.path),
             reausabletext("Lost Connection",
                 fontsize: 24, fontfamily: FontFamily.interBold),
             SizedBox(
@@ -245,10 +243,9 @@ Widget LostinternetConnection(
         //------------------------ Server Error ------------------ //
             : Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: mainAxisAlignment,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset
-              (Assets.images.serverError.path,height: mainAxisAlignment==MainAxisAlignment.start?330:null,),
+            Image.asset(Assets.images.serverError.path),
             reausabletext("Something went wrong",
                 fontsize: 24, fontfamily: FontFamily.interBold),
             SizedBox(
@@ -274,6 +271,7 @@ Widget LostinternetConnection(
         )),
   );
 }
+
 
 Widget assetImage(String name,{double? height,double? width}) {
   return Center(

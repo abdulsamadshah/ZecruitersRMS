@@ -1,104 +1,103 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/common_widget/appBar.dart';
-import 'package:zecruiters_rms/data/models/UserModel.dart';
+import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
+import 'package:zecruiters_rms/logic/bloc/CandiDate/candi_date_cubit.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 import 'package:zecruiters_rms/presentation/screen/Detail/Candidate/CandidateDetail.dart';
 
 class CandidateListScreen extends StatefulWidget {
-  const CandidateListScreen({super.key});
+  String jdId;
+  int listType;
+  CandidateListScreen({super.key, required this.jdId, required this.listType});
 
   @override
   State<CandidateListScreen> createState() => _CandidatedetailScreenState();
 }
 
 class _CandidatedetailScreenState extends State<CandidateListScreen> {
-  List<UserModel> dummyUsers = [
-    UserModel(
-      name: "Samad",
-      email: "sabdulsamad272@gmail.com",
-      mobileNumber: "7249303582",
-      whatsappNumber: "7249303582",
-    ),
-    UserModel(
-      name: "Bob Johnson",
-      email: "bob.johnson@example.com",
-      mobileNumber: "2345678901",
-      whatsappNumber: "2345678901",
-    ),
-    UserModel(
-      name: "Charlie Brown",
-      email: "charlie.brown@example.com",
-      mobileNumber: "3456789012",
-      whatsappNumber: "3456789012",
-    ),
-    UserModel(
-      name: "Diana Prince",
-      email: "diana.prince@example.com",
-      mobileNumber: "4567890123",
-      whatsappNumber: "4567890123",
-    ),
-    UserModel(
-      name: "Ethan Hunt",
-      email: "ethan.hunt@example.com",
-      mobileNumber: "5678901234",
-      whatsappNumber: "5678901234",
-    ),
-    UserModel(
-      name: "Fiona Gallagher",
-      email: "fiona.gallagher@example.com",
-      mobileNumber: "6789012345",
-      whatsappNumber: "6789012345",
-    ),
-    UserModel(
-      name: "George Michael",
-      email: "george.michael@example.com",
-      mobileNumber: "7890123456",
-      whatsappNumber: "7890123456",
-    ),
-    UserModel(
-      name: "Hannah Montana",
-      email: "hannah.montana@example.com",
-      mobileNumber: "8901234567",
-      whatsappNumber: "8901234567",
-    ),
-    UserModel(
-      name: "Isaac Newton",
-      email: "isaac.newton@example.com",
-      mobileNumber: "9012345678",
-      whatsappNumber: "9012345678",
-    ),
-    UserModel(
-      name: "Julia Roberts",
-      email: "julia.roberts@example.com",
-      mobileNumber: "0123456789",
-      whatsappNumber: "0123456789",
-    ),
-  ];
+  final CandiDateCubit candiDateCubit = CandiDateCubit();
+
+  @override
+  void initState() {
+    super.initState();
+    candiDateCubit.getCandidateData(
+        jdId: widget.jdId, listType: widget.listType);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: mainAppBar(context, title: "Candidate List", type: "basic"),
-      body: ListView.builder(
+      body: Padding(
+          padding: EdgeInsets.all(8.0.r),
+          child: BlocConsumer<CandiDateCubit, CandiDateState>(
+            bloc: candiDateCubit,
+            listener: (context, state) {},
+            builder: (context, state) {
+              switch (state.runtimeType) {
+                case LoadingState:
+                  return CandiDateListUi(context, isLoading: true);
+
+                case LoadingError:
+                  final networkconnectionlost = state as LoadingError;
+                  return LostinternetConnection(
+                      retry: () {
+                        candiDateCubit.getCandidateData(
+                            jdId: widget.jdId, listType: widget.listType);
+                      },
+                      messgae: networkconnectionlost.error.toString());
+
+                case CandiDateLoadingSuccess:
+                  final list = state as CandiDateLoadingSuccess;
+                  if (list.listData!.isEmpty) {
+                    return Align(
+                        alignment: Alignment.center,
+                        child: reausabletext("No Data Found"));
+                  } else {
+                    return CandiDateListUi(context, data: list.listData);
+                  }
+
+                default:
+                  return const SizedBox();
+              }
+            },
+          )),
+    );
+  }
+
+  Widget CandiDateListUi(
+    BuildContext context, {
+    List<CandiDateData>? data,
+    bool isLoading = false,
+  }) {
+    return Skeletonizer(
+      enabled: isLoading,
+      child: ListView.builder(
         physics: const ClampingScrollPhysics(),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-        itemCount: dummyUsers.length,
+        itemCount: data?.length,
         itemBuilder: (ctx, index) {
-          final user = dummyUsers[index];
+          final user = data?[index];
 
           return InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>CandidateDetailScreen(),));
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CandidateDetailScreen()),
+              );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
               child: Card(
-                elevation: 4,
+                elevation: 6,
+                margin: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
@@ -107,47 +106,66 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      reausabletext(
-                        'Name: ${user.name}',
-                        fontsize: 15,
-                        fontweight: FontWeight.bold,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 28.r,
+                            backgroundColor: Colors.grey[300],
+                            child: Icon(
+                              Icons.person,
+                              size: 28.r,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              reausabletext(
+                                widths: 240,
+                                textoverflow: TextOverflow.ellipsis,
+                                'Name: ${user?.firstName ?? "N/A"} ${user?.lastName ?? ""}',
+                                fontsize: 16,
+                                fontweight: FontWeight.bold,
+                              ),
+                              SizedBox(height: 4.h),
+                              reausabletext(
+                                widths: 240,
+                                maxline: 2,
+                                'Email: ${user?.emailId ?? "N/A"}',
+                                fontsize: 14,
+                                color: Colors.grey[700],
+                              ),
+                              SizedBox(height: 4.h),
+                              reausabletext(
+                                'Mobile: ${user?.contactNo ?? "N/A"}',
+                                fontsize: 14,
+                                color: Colors.grey[700],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 8.h),
-                      reausabletext(
-                        'Email: ${user.email}',
-                        fontsize: 13,
-                        color: Colors.grey[700],
-                      ),
-                      SizedBox(height: 4.h),
-                      reausabletext(
-                        'Mobile: ${user.mobileNumber}',
-                        fontsize: 13,
-                        color: Colors.grey[700],
-                      ),
-                      SizedBox(height: 4.h),
-                      reausabletext(
-                        'WhatsApp: ${user.whatsappNumber ?? "N/A"}',
-                        fontsize: 13,
-                        color: Colors.grey[700],
-                      ),
-
+                      SizedBox(height: 12.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton.icon(
                             onPressed: () async {
-                              String url = "tel:${user.mobileNumber}";
+                              String url = "tel:${user?.contactNo ?? ""}";
                               if (await canLaunch(url)) {
                                 await launch(url);
                               } else {
                                 throw 'Could not make the phone call.';
                               }
                             },
-                            icon: reausableIcon(
-                                icon: Icons.call, color: Colors.white, size: 25),
+                            icon:
+                                Icon(Icons.call, color: Colors.white, size: 20),
                             label: reausabletext(
                               'Call',
-                              fontsize: 13,
+                              fontsize: 14,
                               color: Colors.white,
                             ),
                             style: ElevatedButton.styleFrom(
@@ -159,20 +177,22 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                           ),
                           ElevatedButton.icon(
                             onPressed: () async {
-                              String url = "https://wa.me/${user.whatsappNumber}";
+                              String url =
+                                  "https://wa.me/${user?.contactNo ?? ""}";
                               if (await canLaunch(url)) {
                                 await launch(url);
                               } else {
                                 throw 'Could not open WhatsApp.';
                               }
                             },
-                            icon: reausableIcon(
-                                icon: FontAwesomeIcons.whatsapp,
-                                color: Colors.white,
-                                size: 25),
+                            icon: Icon(
+                              FontAwesomeIcons.whatsapp,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                             label: reausabletext(
                               'WhatsApp',
-                              fontsize: 13,
+                              fontsize: 14,
                               color: Colors.white,
                             ),
                             style: ElevatedButton.styleFrom(
@@ -194,6 +214,4 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
       ),
     );
   }
-
-
 }
