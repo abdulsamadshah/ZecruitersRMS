@@ -32,7 +32,7 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mainAppBar(context, title: "Candidate List", type: "basic"),
+      appBar: mainAppBar(context, title: "Candidate Lists", type: "basic"),
       body: Padding(
           padding: EdgeInsets.all(8.0.r),
           child: BlocConsumer<CandiDateCubit, CandiDateState>(
@@ -90,7 +90,8 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => CandidateDetailScreen()),
+                  builder: (context) => CandidateDetailScreen(),
+                ),
               );
             },
             child: Padding(
@@ -121,7 +122,6 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                           SizedBox(width: 12.w),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               reausabletext(
                                 widths: 240,
@@ -152,8 +152,10 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ElevatedButton.icon(
-                            onPressed: () async {
+                          _buildIconButton(
+                            icon: Icons.call,
+                            color: Colors.green,
+                            onTap: () async {
                               String url = "tel:${user?.contactNo ?? ""}";
                               if (await canLaunch(url)) {
                                 await launch(url);
@@ -161,22 +163,23 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                                 throw 'Could not make the phone call.';
                               }
                             },
-                            icon:
-                                Icon(Icons.call, color: Colors.white, size: 20),
-                            label: reausabletext(
-                              'Call',
-                              fontsize: 14,
-                              color: Colors.white,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
                           ),
-                          ElevatedButton.icon(
-                            onPressed: () async {
+                          _buildIconButton(
+                            icon: Icons.email,
+                            color: Colors.blue,
+                            onTap: () async {
+                              String url = "mailto:${user?.emailId ?? ""}";
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              } else {
+                                throw 'Could not send the email.';
+                              }
+                            },
+                          ),
+                          _buildIconButton(
+                            icon: FontAwesomeIcons.whatsapp,
+                            color: Colors.teal,
+                            onTap: () async {
                               String url =
                                   "https://wa.me/${user?.contactNo ?? ""}";
                               if (await canLaunch(url)) {
@@ -185,22 +188,6 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                                 throw 'Could not open WhatsApp.';
                               }
                             },
-                            icon: Icon(
-                              FontAwesomeIcons.whatsapp,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            label: reausabletext(
-                              'WhatsApp',
-                              fontsize: 14,
-                              color: Colors.white,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
                           ),
                         ],
                       ),
@@ -211,6 +198,29 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  // Helper Method for Icon Button with Background
+  Widget _buildIconButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(12.r),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1), // Light background with the same color
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          size: 28.r,
+          color: color,
+        ),
       ),
     );
   }

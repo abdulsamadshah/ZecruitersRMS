@@ -28,7 +28,7 @@ class _JobdetailscreenState extends State<Jobdetailscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: mainAppBar(context, title: "JD Detail", type: "basic"),
+        appBar: mainAppBar(context, title: widget.jdId, type: "basic"),
         body: BlocConsumer<JdDetailCubit, JdDetailState>(
           bloc: jdDetail,
           listener: (context, state) {},

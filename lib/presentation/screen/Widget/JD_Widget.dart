@@ -110,60 +110,18 @@ class JobDetailUi extends StatelessWidget {
                   Divider(color: Colors.grey.shade300, thickness: 1),
                   SizedBox(height: 12.h),
                   _buildSectionTitle("Job Details"),
+                  _buildDetailRow("Job Id", "${detail?.jdId ?? 0}"),
                   _buildDetailRow("Experience",
                       "${detail?.jdExperianceFrom ?? 0} - ${detail?.jdExperianceTo ?? 0} years"),
                   _buildDetailRow("Age",
                       "${detail?.jdAgeFrom ?? '-'} - ${detail?.jdAgeTo ?? '-'} years"),
-                  _buildDetailRow("Gender Preference", detail?.jdGender),
-                  _buildDetailRow("FCTC", detail?.jdFctc),
-                  _buildDetailRow("TCTC", detail?.jdTctc),
+                  _buildDetailRow("Gender", detail?.jdGender),
+                  _buildDetailRow("FCTC", "${detail?.jdFctc}L"),
+                  _buildDetailRow("TCTC", "${detail?.jdTctc}L"),
                   _buildDetailRow("Variable Pay", detail?.jdVariable),
                   _buildDetailRow("Pincode", detail?.jdPincode),
                   _buildDetailRow(
                       "Number of Candidates", detail?.jdNcandidates),
-
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 6.0.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        reausabletext(
-                          "Skill",
-                          fontsize: 16,
-                          fontweight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                        HtmlWidget(
-                          detail?.jdSkill ?? '',
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 6.0.h),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: reausabletext(
-                            "Preference",
-                            fontsize: 16,
-                            fontweight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 3,
-                          child: HtmlWidget(
-                            detail?.jdPreference ?? '',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
                   SizedBox(height: 20.h),
 
@@ -188,14 +146,61 @@ class JobDetailUi extends StatelessWidget {
                     margin: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r)),
-                    child: Padding(
-                      padding: EdgeInsets.all(12.0.w),
-                      child: HtmlWidget(
-                        detail?.jdDescription ?? "No description available.",
-                        textStyle: TextStyle(
-                          fontSize: 14.sp,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 6.0.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              reausabletext(
+                                "Skill",
+                                fontsize: 16,
+                                fontweight: FontWeight.w500,
+                                color: Colors.black87,
+                              ),
+                              HtmlWidget(
+                                detail?.jdSkill ?? '',
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 6.0.h),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: reausabletext(
+                                  "Preference",
+                                  fontsize: 16,
+                                  fontweight: FontWeight.w500,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: HtmlWidget(
+                                  detail?.jdPreference ?? '',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        HtmlWidget(
+                          detail?.jdDescription ?? "No description available.",
+                          textStyle: TextStyle(
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

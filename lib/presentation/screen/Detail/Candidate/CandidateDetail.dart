@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+// import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -137,11 +137,11 @@ class CandidateDetailScreen extends StatelessWidget {
           icon: Icons.call,
           color: Colors.green,
           onPressed: () async {
-            FlutterPhoneDirectCaller.callNumber("7249303582").then((value) {
-              if(value==true){
-                // Recordinging Started
-              }
-            },);
+            // FlutterPhoneDirectCaller.callNumber("7249303582").then((value) {
+            //   if(value==true){
+            //     // Recordinging Started
+            //   }
+            // },);
 
 
           },

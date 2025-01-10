@@ -30,7 +30,7 @@ class _JobDetailState extends State<JobDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mainAppBar(context, title: "JD List", type: "basic"),
+      appBar: mainAppBar(context, title: "JD Lists", type: "basic"),
       body: Padding(
           padding: EdgeInsets.all(8.0.r),
           child: BlocConsumer<JdDetailCubit, JdDetailState>(
@@ -67,6 +67,8 @@ class _JobDetailState extends State<JobDetail> {
     );
   }
 
+
+
   Widget JD_DetailUi(BuildContext context,
       {List<JDData>? data, bool isLoading = false}) {
     return SingleChildScrollView(
@@ -75,38 +77,35 @@ class _JobDetailState extends State<JobDetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Scrollable Header
-          Skeletonizer(
-            enabled: isLoading,
-            child: Container(
-              height: 50.h,
-              color: Colors.black,
-              child: Row(
-                children: [
-                  buildHeaderCell("JD Id", 80),
-                  buildHeaderCell("Sourced", 80),
-                  buildHeaderCell("Pending", 80),
-                  buildHeaderCell("In Process", 100),
-                  buildHeaderCell("Shortlisted", 100),
-                  buildHeaderCell("L2 Pending", 100),
-                  buildHeaderCell("Client Name", 200),
-                  buildHeaderCell("Designation", 200),
-                ],
-              ),
+          Container(
+            height: 50.h,
+            color: Colors.black,
+            child: Row(
+              children: [
+                buildHeaderCell("JD Id", 80),
+                buildHeaderCell("Sourced", 80),
+                buildHeaderCell("Pending", 80),
+                buildHeaderCell("In Process", 100),
+                buildHeaderCell("Shortlisted", 100),
+                buildHeaderCell("L2 Pending", 100),
+                buildHeaderCell("Client Name", 200),
+                buildHeaderCell("Designation", 200),
+              ],
             ),
           ),
-          // Safely handle `data` nullability
+          // Scrollable Body
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
                 children: isLoading
                     ? List.generate(
-                        20,
+                    20,
                         (index) => JdDetailData(context,
-                            row: null)) // Display 5 dummy rows during loading
+                        row: null)) // Display skeleton rows during loading
                     : (data ?? []).map((row) {
-                        return JdDetailData(context, row: row);
-                      }).toList(),
+                  return JdDetailData(context, row: row);
+                }).toList(),
               ),
             ),
           ),
@@ -125,88 +124,171 @@ class _JobDetailState extends State<JobDetail> {
       ),
       child: Row(
         children: [
-          InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Jobdetailscreen(
-                        jdId: row!.jDID.toString(),
-                      ),
-                    ));
-              },
-              child: buildBodyCell(row?.jDID?.toString() ?? "-", 80)),
-          InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CandidateListScreen(
-                        jdId: row!.jDID.toString(),
-                        listType: 1,
-                      ),
-                    ));
-              },
-              child: buildBodyCell(row?.sOURCED?.toString() ?? "-", 80)),
-          InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CandidateListScreen(
-                        jdId: row!.jDID.toString(),
-                        listType: 2,
-                      ),
-                    ));
-              },
-              child: buildBodyCell(row?.pENDING?.toString() ?? "-", 80)),
-
-
-                    InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CandidateListScreen(
-                        jdId: row!.jDID.toString(),
-                        listType: 3,
-                      ),
-                    ));
-              },
-              child: buildBodyCell(row?.iNPROCESS?.toString() ?? "-", 80)),
-
-          InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CandidateListScreen(
-                        jdId: row!.jDID.toString(),
-                        listType: 4,
-                      ),
-                    ));
-              },
-              child: buildBodyCell(row?.sHORTLIST?.toString() ?? "-", 100)),
-
-
-          InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CandidateListScreen(
-                        jdId: row!.jDID.toString(),
-                        listType: 5,
-                      ),
-                    ));
-              },
-              child: buildBodyCell(row?.l2PENDING?.toString() ?? "-", 100)),
-
-
-          buildBodyCell(row?.cLIENTNAME?.toString() ?? "-", 200),
-          buildBodyCell(row?.dESIGNATION?.toString() ?? "-", 200),
+          buildClickableCell(
+            context,
+            content: row?.jDID?.toString() ?? "-",
+            width: 80,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Jobdetailscreen(
+                    jdId: row?.jDID.toString() ?? "",
+                  ),
+                ),
+              );
+            },
+          ),
+          buildClickableCell(
+            context,
+            content: row?.sOURCED?.toString() ?? "-",
+            width: 80,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CandidateListScreen(
+                    jdId: row?.jDID.toString() ?? "",
+                    listType: 1,
+                  ),
+                ),
+              );
+            },
+          ),
+          buildClickableCell(
+            context,
+            content: row?.pENDING?.toString() ?? "-",
+            width: 80,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CandidateListScreen(
+                    jdId: row?.jDID.toString() ?? "",
+                    listType: 2,
+                  ),
+                ),
+              );
+            },
+          ),
+          buildClickableCell(
+            context,
+            content: row?.iNPROCESS?.toString() ?? "-",
+            width: 100,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CandidateListScreen(
+                    jdId: row?.jDID.toString() ?? "",
+                    listType: 3,
+                  ),
+                ),
+              );
+            },
+          ),
+          buildClickableCell(
+            context,
+            content: row?.sHORTLIST?.toString() ?? "-",
+            width: 100,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CandidateListScreen(
+                    jdId: row?.jDID.toString() ?? "",
+                    listType: 4,
+                  ),
+                ),
+              );
+            },
+          ),
+          buildClickableCell(
+            context,
+            content: row?.l2PENDING?.toString() ?? "-",
+            width: 100,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CandidateListScreen(
+                    jdId: row?.jDID.toString() ?? "",
+                    listType: 5,
+                  ),
+                ),
+              );
+            },
+          ),
+          buildClickableCell(
+            context,
+            content: row?.cLIENTNAME?.toString() ?? "-",
+            width: 200,
+          ),
+          buildClickableCell(
+            context,
+            content: row?.dESIGNATION?.toString() ?? "-",
+            width: 200,
+          ),
         ],
       ),
     );
   }
+
+  Widget buildClickableCell(BuildContext context,
+      {required String content,
+        required double width,
+        VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: width,
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: Text(
+          content,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: onTap != null ? Colors.blue : Colors.grey[800],
+            fontWeight: onTap != null ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildHeaderCell(String title, double width) {
+    return Container(
+      width: width,
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14.sp,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
