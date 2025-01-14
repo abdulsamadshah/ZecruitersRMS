@@ -90,7 +90,7 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CandidateDetailScreen(),
+                  builder: (context) => CandidateDetailScreen(jdId: user!.jdId.toString(),candiDateId: user.id.toString(),mobNo: user.contactNo.toString(),),
                 ),
               );
             },
@@ -141,6 +141,19 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                               SizedBox(height: 4.h),
                               reausabletext(
                                 'Mobile: ${user?.contactNo ?? "N/A"}',
+                                fontsize: 14,
+                                color: Colors.grey[700],
+                              ),
+
+                              SizedBox(height: 4.h),
+                              reausabletext(
+                                'JD ID: ${user?.jdId ?? "N/A"}', // Display JD ID
+                                fontsize: 14,
+                                color: Colors.grey[700],
+                              ),
+                              SizedBox(height: 4.h),
+                              reausabletext(
+                                'Total Call Duration: ${user?.totalCallDuration ?? "N/A"}', // Display call duration
                                 fontsize: 14,
                                 color: Colors.grey[700],
                               ),

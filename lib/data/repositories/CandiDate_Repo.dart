@@ -1,5 +1,7 @@
 
 import 'package:zecruiters_rms/data/http/http_util.dart';
+import 'package:zecruiters_rms/data/models/CallDetailRes.dart';
+import 'package:zecruiters_rms/data/models/CandiDateDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
 
 class CandiDate_Repo{
@@ -7,4 +9,15 @@ class CandiDate_Repo{
     var response = await HttpUtil().post("/Zecapis/candidatelist",data: data);
     return CandiDateListRes.fromJson(response);
   }
+
+  static Future<CandiDateDetailRes> getCandiDateDetail({required var param}) async {
+    var response = await HttpUtil().post("/Zecapis/singlecandidate",data: param);
+    return CandiDateDetailRes.fromJson(response);
+  }
+
+  static Future<CallDetailRes> getCallDataList(var data) async {
+    var response = await HttpUtil().post("/Zecapis/calldata",data: data);
+    return CallDetailRes.fromJson(response);
+  }
+
 }

@@ -28,6 +28,7 @@ class CandiDateListRes {
 }
 
 class CandiDateData {
+  String? id;
   String? jdId;
   String? sourcedFor;
   String? firstName;
@@ -36,12 +37,13 @@ class CandiDateData {
   String? emailId;
   String? contactNo;
   String? resumeName;
-  String? remarkst;
   String? remarks;
+  String? remarkst;
   String? totalCallDuration;
 
   CandiDateData(
-      {this.jdId,
+      {this.id,
+      this.jdId,
       this.sourcedFor,
       this.firstName,
       this.lastName,
@@ -49,11 +51,12 @@ class CandiDateData {
       this.emailId,
       this.contactNo,
       this.resumeName,
-      this.remarkst,
       this.remarks,
+      this.remarkst,
       this.totalCallDuration});
 
   CandiDateData.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     jdId = json['jd_id'];
     sourcedFor = json['sourced_for'];
     firstName = json['first_name'];
@@ -62,13 +65,14 @@ class CandiDateData {
     emailId = json['email_id'];
     contactNo = json['contact_no'];
     resumeName = json['resume_name'];
-    remarkst = json['remarkst'];
     remarks = json['remarks'];
+    remarkst = json['remarkst'];
     totalCallDuration = json['total_call_duration'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
     data['jd_id'] = this.jdId;
     data['sourced_for'] = this.sourcedFor;
     data['first_name'] = this.firstName;
@@ -77,8 +81,8 @@ class CandiDateData {
     data['email_id'] = this.emailId;
     data['contact_no'] = this.contactNo;
     data['resume_name'] = this.resumeName;
-    data['remarkst'] = this.remarkst;
     data['remarks'] = this.remarks;
+    data['remarkst'] = this.remarkst;
     data['total_call_duration'] = this.totalCallDuration;
     return data;
   }

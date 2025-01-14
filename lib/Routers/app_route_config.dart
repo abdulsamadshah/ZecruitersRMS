@@ -1,6 +1,7 @@
 
 
 import 'package:zecruiters_rms/core/Utils/Context_Utility.dart';
+import 'package:zecruiters_rms/logic/bloc/Dashboard/dashboard_cubit.dart';
 import 'package:zecruiters_rms/logic/bloc/SignIn/sign_in_bloc.dart';
 import 'package:zecruiters_rms/logic/bloc/jd_detail_cubit.dart';
 import 'package:zecruiters_rms/presentation/screen/Application/splashscreen.dart';
@@ -8,10 +9,11 @@ import 'package:zecruiters_rms/presentation/screen/Auth/Login_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zecruiters_rms/presentation/screen/Dashboard/Dashboard.dart';
+import 'package:zecruiters_rms/presentation/screen/Dashboard/Home.dart';
 import 'package:zecruiters_rms/presentation/screen/Detail/JD/JDScreen.dart';
 import 'package:zecruiters_rms/presentation/screen/Detail/MisDetailScreen.dart';
 
+import '../presentation/screen/Dashboard/Dashboard.dart';
 import 'app_route_constants.dart';
 
 class MyAppRouter {
@@ -46,7 +48,10 @@ class MyAppRouter {
               path: '/Dashboard',
               pageBuilder: (context, state) {
                 return MaterialPage(
-                  child: const Dashboard(),
+                  child: BlocProvider(
+                    create: (context) => DashboardCubit(),
+                    child: const DashboardScreen(),
+                  ),
                 );
               },
             ),
