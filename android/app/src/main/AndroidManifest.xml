@@ -20,7 +20,7 @@
 
 
     <application
-        android:label="zecruiters_rms"
+        android:label="Zecruiters RMS"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

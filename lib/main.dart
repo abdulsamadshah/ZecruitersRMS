@@ -7,7 +7,6 @@ import 'Routers/app_route_config.dart';
 import 'core/constant/global.dart';
 import 'core/theme/themes_data.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Global.init();
