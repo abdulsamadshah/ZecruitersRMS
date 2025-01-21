@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:zecruiters_rms/Routers/app_route_constants.dart';
 import 'package:zecruiters_rms/core/common_widget/Inputfield.dart';
 import 'package:zecruiters_rms/core/constant/BottomSheet/BottomSheet.dart';
+import 'package:zecruiters_rms/core/constant/appTheme.dart';
 import 'package:zecruiters_rms/core/constant/validator.dart';
 import 'package:zecruiters_rms/core/theme/themes_data.dart';
 import 'package:zecruiters_rms/gen/fonts.gen.dart';
@@ -102,6 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             context,
                             hintname: "Enter Company Id",
                             prefixicon: Icons.cabin,
+                            inputFormatters: [
+                              UpperCaseTextFormatter(),
+                            ],
                             onChanged: (value) {
                               loginBloc
                                   .add(companyIdEvent(value.toString()));

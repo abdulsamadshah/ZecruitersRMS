@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:zecruiters_rms/core/theme/themes_data.dart';
 import 'package:zecruiters_rms/logic/bloc/Dashboard/dashboard_cubit.dart';
+import 'package:zecruiters_rms/presentation/screen/Detail/JD/JDScreen.dart';
 
 import 'Home.dart';
 
@@ -18,7 +19,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardState extends State<DashboardScreen> {
   final List<Widget> _pages = [
     const Home(),
-    const Home(),
+    const JobDetail(),
   ];
 
   @override
@@ -53,14 +54,16 @@ class _DashboardState extends State<DashboardScreen> {
                 tabBackgroundColor: ToggleThemeData.Appcolor,
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                 tabs: const [
-                  GButton(
-                    icon: Icons.work_outline,
-                    text: 'JD',
-                    iconColor: Colors.white,
-                  ),
+
                   GButton(
                     icon: Icons.home_outlined,
                     text: 'Home',
+                    iconColor: Colors.white,
+                  ),
+
+                  GButton(
+                    icon: Icons.work_outline,
+                    text: 'JD',
                     iconColor: Colors.white,
                   ),
                 ],

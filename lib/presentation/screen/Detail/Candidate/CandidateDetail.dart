@@ -46,7 +46,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     String hours =
-    duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
+        duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$hours$minutes:$seconds';
@@ -69,23 +69,17 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     };
   }
 
-
   Future<void> makePhoneCall(String phone) async {
     phoneNumber = phone;
-    setState(() {
+    setState(() {});
 
-    });
-
-    bool? callResult =
-    await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+    bool? callResult = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
 
     if (callResult == null || !callResult) {
-     Utils.fluttertoast(
-       "Failed to initiate phone call");
+      Utils.fluttertoast("Failed to initiate phone call");
       return;
     }
   }
-
 
   Future<bool> requestPermission() async {
     var status = await Permission.phone.request();
@@ -95,7 +89,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
       PermissionStatus.restricted ||
       PermissionStatus.limited ||
       PermissionStatus.permanentlyDenied =>
-      false,
+        false,
       PermissionStatus.provisional || PermissionStatus.granted => true,
     };
   }
@@ -113,7 +107,6 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   void onClose() {
     _timer?.cancel();
     _phoneStateSubscription?.cancel();
-
   }
 
   @override
@@ -196,39 +189,36 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
         ));
   }
 
-
-  Widget CandiDateDetailUi({ CandiDateDetail? detail,
-   bool isLoading=false}){
+  Widget CandiDateDetailUi({CandiDateDetail? detail, bool isLoading = false}) {
     return Skeletonizer(
       enabled: isLoading,
       child: Padding(
         padding: EdgeInsets.all(16.r),
         child: Card(
-          elevation: 8,
+          elevation: 5,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(7.r),
           ),
           child: Padding(
             padding: EdgeInsets.all(16.r),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 40.r,
-                      backgroundColor: Colors.indigo.shade100,
-                      child: Text(
-                        getInitials(detail: detail),
-                        style: TextStyle(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.indigo,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
+                    // CircleAvatar(
+                    //   radius: 40.r,
+                    //   backgroundColor: Colors.indigo.shade100,
+                    //   child: Text(
+                    //     getInitials(detail: detail),
+                    //     style: TextStyle(
+                    //       fontSize: 24.sp,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.indigo,
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(width: 12.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,7 +298,6 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       color: Colors.green,
                       onTap: () async {
                         makePhoneCall("7387454586");
-
                       },
                     ),
                     buildIconButton(
@@ -327,8 +316,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       icon: FontAwesomeIcons.whatsapp,
                       color: Colors.teal,
                       onTap: () async {
-                        String url =
-                            "https://wa.me/${detail?.contactNo ?? ""}";
+                        String url = "https://wa.me/${detail?.contactNo ?? ""}";
                         if (await canLaunch(url)) {
                           await launch(url);
                         } else {
@@ -347,7 +335,6 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     );
   }
 
-
   Widget CallListUi({List<CallDetail>? data, bool isLoading = false}) {
     return Skeletonizer(
       enabled: isLoading,
@@ -361,10 +348,10 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
             child: Card(
-              elevation: 6,
+              elevation: 5,
               margin: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(7.r),
               ),
               child: Padding(
                 padding: EdgeInsets.all(16.r),
