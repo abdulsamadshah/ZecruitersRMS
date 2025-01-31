@@ -7,13 +7,29 @@ buildscript {
 
     }
 
+    // Add this part -------------->
+    subprojects {
+        afterEvaluate { project ->
+            if (project.hasProperty('android')) {
+                project.android {
+                    if (namespace == null) {
+                        namespace project.group
+                    }
+                }
+            }
+        }
+    }
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0'
+
+        classpath 'com.android.tools.build:gradle:8.2.1'
+
+        classpath 'com.android.tools.build:gradle:8.1.0'
+
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 
 }
-
 
 
 allprojects {

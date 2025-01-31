@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+// import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -73,12 +73,12 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     phoneNumber = phone;
     setState(() {});
 
-    bool? callResult = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+    // bool? callResult = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
 
-    if (callResult == null || !callResult) {
-      Utils.fluttertoast("Failed to initiate phone call");
-      return;
-    }
+    // if (callResult == null || !callResult) {
+    //   Utils.fluttertoast("Failed to initiate phone call");
+    //   return;
+    // }
   }
 
   Future<bool> requestPermission() async {
