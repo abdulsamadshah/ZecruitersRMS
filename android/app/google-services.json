@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "368494460990",
+    "project_id": "zecruiters-d7341",
+    "storage_bucket": "zecruiters-d7341.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368494460990:android:d2e174f5b44fde3bd3916f",
+        "android_client_info": {
+          "package_name": "com.example.zecruiters_rms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8trOh6iyMA8rm-vGfstoCFoAVHbMtaWI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
