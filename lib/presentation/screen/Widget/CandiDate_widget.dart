@@ -83,3 +83,31 @@ String formatCallDuration(String duration) {
     return "Invalid duration";
   }
 }
+
+Widget buildTextRow(String label, String? value) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 4.h),
+    child: Row(
+      children: [
+        Text(
+          "$label:",
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Expanded(
+          child: Text(
+            value ?? "N/A",
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.grey[800],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}

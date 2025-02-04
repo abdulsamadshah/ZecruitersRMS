@@ -107,8 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               UpperCaseTextFormatter(),
                             ],
                             onChanged: (value) {
-                              loginBloc
-                                  .add(companyIdEvent(value.toString()));
+                              loginBloc.add(companyIdEvent(value.toString()));
+
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {

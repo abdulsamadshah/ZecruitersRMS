@@ -10,6 +10,8 @@ import 'package:zecruiters_rms/logic/bloc/CandiDate/candi_date_cubit.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 import 'package:zecruiters_rms/presentation/screen/Detail/Candidate/CandidateDetail.dart';
 
+import 'RecordCall.dart';
+
 class CandidateListScreen extends StatefulWidget {
   String jdId;
   int listType;
@@ -90,7 +92,8 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CandidateDetailScreen(jdId: user!.jdId.toString(),candiDateId: user.id.toString(),mobNo: user.contactNo.toString(),),
+                  builder: (context) => RecordCall(),
+                  // builder: (context) => CandidateDetailScreen(jdId: user!.jdId.toString(),candiDateId: user.id.toString(),mobNo: user.contactNo.toString(),),
                 ),
               );
             },

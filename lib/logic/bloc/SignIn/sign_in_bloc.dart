@@ -40,9 +40,12 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       Loading().showloading(event.context);
       var result = await AuthRepo.login(
           param: {
-            "companyid": state.companyId,
-            "email": state.emailId,
-            "password": state.password,
+            // "companyid": state.companyId,
+            // "email": state.emailId,
+            // "password": state.password,
+            "companyid": "PAPERPINK",
+            "email": "krutika@zecruiters.com",
+            "password": 'Krutika@123',
           });
 
       if (result.status == true) {
