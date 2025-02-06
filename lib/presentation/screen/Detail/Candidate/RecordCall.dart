@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:just_audio/just_audio.dart';
@@ -11,7 +10,6 @@ import 'package:phone_state/phone_state.dart';
 import 'package:record/record.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/constant/Utils.dart';
-import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 class RecordCall extends StatefulWidget {
   const RecordCall({super.key});
@@ -22,11 +20,8 @@ class RecordCall extends StatefulWidget {
 
 class _RecordCallState extends State<RecordCall> {
   StreamSubscription<PhoneState>? _phoneStateSubscription;
-
-
- final AudioPlayer audioPlayer = AudioPlayer();
+  final AudioPlayer audioPlayer = AudioPlayer();
   final AudioRecorder _recorder = AudioRecorder();
-
   String? _filePath;
   bool _isRecording = false;
 
@@ -40,11 +35,10 @@ class _RecordCallState extends State<RecordCall> {
   @override
   void dispose() {
     _phoneStateSubscription?.cancel();
-    // _audioPlayer.dispose();
+    audioPlayer.dispose();
     super.dispose();
   }
 
-  /// Request necessary permissions
   Future<void> _requestPermissions() async {
     await [
       Permission.microphone,
@@ -53,97 +47,97 @@ class _RecordCallState extends State<RecordCall> {
     ].request();
   }
 
-  /// Start recording the call
   Future<void> startRecording() async {
     final Directory appDocumentDirectory = await getApplicationDocumentsDirectory();
-    String filePath= p.join(appDocumentDirectory.path,"recording.wav");
+    String filePath = p.join(appDocumentDirectory.path, "recording.wav");
 
     if (await _recorder.hasPermission()) {
-      print("🎤 Starting recording...");
+      Utils.fluttertoast("🎤 Starting recording...");
       await _recorder.start(
         RecordConfig(),
         path: filePath,
       );
       setState(() {
         _isRecording = true;
-        _filePath=null;
+        _filePath = filePath;
       });
-
     } else {
       Utils.fluttertoast("❌ No recording permission!");
     }
   }
 
-
-
-
-  /// Stop recording the call
   Future<void> _stopRecording() async {
-    try {
-      String? filePath =   await _recorder.stop();
+    if (!_isRecording) return;
 
-      if(filePath !=null){
+    try {
+      String? filePath = await _recorder.stop();
+
+      if (filePath != null) {
         setState(() {
-          _isRecording=false;
-          _filePath=filePath;
+          _isRecording = false;
+          _filePath = filePath;
         });
+
+
+        Utils.fluttertoast("📤 Recording stopped and saved at: ${filePath}");
+      } else {
+        Utils.fluttertoast("❌ Error stopping the recording");
       }
-
     } catch (e) {
-      Utils.fluttertoast(e.toString());
-      print("❌ Error stopping recording: $e");
+      Utils.fluttertoast("❌ Error stopping recording: $e");
     }
   }
 
-  /// Play the recorded audio
 
-  Future<void> playRecording() async {
-    if (_filePath == null || !File(_filePath!).existsSync()) {
-      Utils.fluttertoast("❌ No recorded file found!");
-      return;
-    }
 
-    try {
-      print("🎵 Playing file from: $_filePath");
-
-      await audioPlayer.setFilePath(_filePath!);
-       audioPlayer.play();
-      setState(() {
-
-      });
-
-      print("🎵 Playing recorded audio...");
-    } catch (e) {
-      Utils.fluttertoast("❌ Error playing audio: $e");
-    }
-
-  }
-
-  /// Handle Call Events
   void _listenForCallEvents() {
     _phoneStateSubscription = PhoneState.stream.listen((PhoneState state) async {
       if (state.status == PhoneStateStatus.CALL_STARTED) {
+        await Future.delayed(Duration(milliseconds: 500));
         await startRecording();
       } else if (state.status == PhoneStateStatus.CALL_ENDED) {
+        await Future.delayed(Duration(milliseconds: 500));
         await _stopRecording();
-
-        if (_filePath != null) {
-          Utils.fluttertoast("📤 Uploading recording to server...");
-          // uploadRecording(_filePath.toString()); // Uncomment when implementing upload
-        } else {
-          Utils.fluttertoast("❌ File path is empty");
-        }
       }
     });
   }
 
-  /// Initiate a phone call
   Future<void> _makePhoneCall(String phone) async {
     var url = 'tel:$phone';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       Utils.fluttertoast("❌ Could not launch dialer");
+    }
+  }
+
+  Future<void> playRecord() async {
+    if (_filePath != null) {
+      try {
+        final file = File(_filePath!);
+        print("Recording file path: $_filePath");
+
+        if (await file.exists()) {
+          final fileSize = await file.length();
+          if (fileSize > 0) {
+            print("File exists and has a valid size: $fileSize bytes");
+
+            // Stop any currently playing audio before starting the new one
+            await audioPlayer.stop();
+
+            await audioPlayer.setFilePath(_filePath!);
+            await audioPlayer.play();
+          } else {
+            Utils.fluttertoast("❌ The file is empty: $fileSize bytes");
+          }
+        } else {
+          Utils.fluttertoast("❌ File does not exist at path: $_filePath");
+        }
+      } catch (e) {
+        Utils.fluttertoast("❌ Error playing the recording: $e");
+      }
+    } else {
+      Utils.fluttertoast("❌ No recording found to play");
     }
   }
 
@@ -174,27 +168,25 @@ class _RecordCallState extends State<RecordCall> {
               },
             ),
             const SizedBox(height: 20),
-            if(_filePath != null)
-            ElevatedButton(
-              onPressed: () {
-                if (_filePath == null || _filePath!.isEmpty) {
-                  Utils.fluttertoast("❌ File path is empty");
-                } else {
-                  playRecording();
-                }
-              },
-              child: const Text('▶️ Play Recording'),
-            ),
-
-            if(_filePath == null)
-              reausabletext("No Recording found"),
-
-
-            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => _makePhoneCall("7387454586"),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               child: const Text('📞 Make a Call'),
+            ),
+            ElevatedButton(
+              onPressed: startRecording,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text('Record'),
+            ),
+            ElevatedButton(
+              onPressed: _stopRecording,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text('Stop'),
+            ),
+            ElevatedButton(
+              onPressed: playRecord,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text('Play Record'),
             ),
           ],
         ),

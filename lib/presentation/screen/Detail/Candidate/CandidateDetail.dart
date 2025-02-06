@@ -368,7 +368,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       icon: Icons.call,
                       color: Colors.green,
                       onTap: () async {
-                        makePhoneCall("9975083705");
+                        makePhoneCall("7387454587");
                       },
                     ),
                     buildIconButton(
