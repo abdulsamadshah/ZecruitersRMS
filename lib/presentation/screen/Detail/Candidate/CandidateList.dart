@@ -92,8 +92,8 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => RecordCall(),
-                  // builder: (context) => CandidateDetailScreen(jdId: user!.jdId.toString(),candiDateId: user.id.toString(),mobNo: user.contactNo.toString(),),
+                  // builder: (context) => RecordCall(),
+                  builder: (context) => CandidateDetailScreen(jdId: user!.jdId.toString(),candiDateId: user.id.toString(),mobNo: user.contactNo.toString(),),
                 ),
               );
             },

@@ -1,7 +1,9 @@
 import 'dart:async';
-
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -38,8 +40,12 @@ class CandidateDetailScreen extends StatefulWidget {
 class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   final CandiDateCubit candiDateCubit = CandiDateCubit();
   final CandiDateCubit callDetailCubit = CandiDateCubit();
-  StreamSubscription<PhoneStateStatus>? _phoneStateSubscription;
-  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  StreamSubscription<PhoneState>? _phoneStateSubscription;
+  final AudioPlayer audioPlayer = AudioPlayer();
+  final AudioRecorder _recorder = AudioRecorder();
+  String? _filePath;
+  bool _isRecording = false;
 
   bool granted = false;
   var isCallOngoing = false;
@@ -73,124 +79,193 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     };
   }
 
-  Future<void> makePhoneCall(String phone) async {
-    phoneNumber = phone;
-    setState(() {});
-    // void startCallRecording() async {
-      var url = 'tel:$phone'; // Dial a number
-      if (await canLaunch(url)) {
-        await launch(url);
-      } else {
-      }
-
-
-    }
-
-
-  Future<bool> requestPermission() async {
-    var status = await Permission.phone.request();
-
-    return switch (status) {
-      PermissionStatus.denied ||
-      PermissionStatus.restricted ||
-      PermissionStatus.limited ||
-      PermissionStatus.permanentlyDenied =>
-        false,
-      PermissionStatus.provisional || PermissionStatus.granted => true,
-    };
-  }
-
-
-  final _recorder = AudioRecorder();
-  bool _isRecording = false;
-  String? filePath;
-
-  Future<void> startRecording() async {
-    final directory = await getApplicationDocumentsDirectory();
-    filePath = '${directory.path}/call_recording.m4a'; // Use M4A (AAC format)
-
-    if (await _recorder.hasPermission()) {
-      await _recorder.start(
-        const RecordConfig(encoder: AudioEncoder.aacLc), // AAC format
-        path: filePath!,
-      );
-    } else {
-    }
-  }
-
-  Future<void> stopRecording() async {
-    // Stop recording and get the file path
-    String? path = await _recorder.stop();
-
-    // Log and check if the path is returned correctly
-    if (path != null) {
-      _isRecording = false;
-      filePath = path;
-
-    } else {
-    }
-    setState(() {
-
-    });
-  }
-
-
-  void listenForCallEvents() {
-    PhoneState.stream.listen((PhoneState state) async {
-      if (state.status == PhoneStateStatus.CALL_STARTED) {
-        await startRecording();
-      } else if (state.status == PhoneStateStatus.CALL_ENDED) {
-        await stopRecording();
-
-        // Log the file path before proceeding with upload
-
-        if (filePath != null) {
-          uploadRecording(filePath.toString());
-        } else {
-          Utils.fluttertoast("File path is empty");
-        }
-      }
-    });
-  }
-
-  Future<void> uploadRecording(String filePath) async {
-
-    // Additional logic for uploading the file goes here
-  }
-
-
-  Future<void> playRecording(String filePath) async {
-    try {
-      await _audioPlayer.setFilePath(filePath);
-      await _audioPlayer.play();
-    } catch (e) {
-      Utils.fluttertoast(e.toString());
-    }
-  }
-
-
-
   @override
   void initState() {
     super.initState();
 
-    requestMicroPermissions();
     candiDateCubit.getCandidateDetailData(
         jdid: widget.jdId, candidateid: widget.candiDateId);
     callDetailCubit.getCallDataList(jdId: widget.jdId, mobNo: widget.mobNo);
-  listenForCallEvents();
+    _requestPermissions();
+    _listenForCallEvents();
   }
-  Future<void> requestMicroPermissions() async {
 
-    await Permission.microphone.request();
-    await Permission.storage.request();
-    await  requestPermission();
-  }
   @override
   void onClose() {
     _timer?.cancel();
     _phoneStateSubscription?.cancel();
+    audioPlayer.dispose();
   }
+
+  Future<void> _requestPermissions() async {
+    await [
+      Permission.microphone,
+      Permission.phone,
+      Permission.storage,
+    ].request();
+  }
+
+  Future<void> startRecording() async {
+    final Directory appDocumentDirectory =
+        await getApplicationDocumentsDirectory();
+    String filePath = p.join(appDocumentDirectory.path, "recording.wav");
+
+    if (await _recorder.hasPermission()) {
+      Utils.fluttertoast("🎤 Starting recording...");
+      await _recorder.start(
+        RecordConfig(
+          encoder: AudioEncoder.wav,
+          // sampleRate: 16000,
+          // bitRate: 128000,
+          noiseSuppress: true, // ✅ Helps in call recording
+          // androidOutputFormat: AndroidAudioSource.voiceCommunication, // ✅ Ensures capturing call audio
+        ),
+        path: filePath,
+      );
+      setState(() {
+        _isRecording = true;
+        _filePath = filePath;
+      });
+    } else {
+      Utils.fluttertoast("❌ No recording permission!");
+    }
+  }
+
+  Future<void> _stopRecording() async {
+    if (!_isRecording) return;
+
+    try {
+      await Future.delayed(Duration(milliseconds: 500)); // ✅ Ensures recording finishes
+      String? filePath = await _recorder.stop();
+
+      if (filePath != null) {
+        final fileSize = await File(filePath).length();
+
+        setState(() {
+          _isRecording = false;
+          _filePath = filePath;
+        });
+
+        if (fileSize > 0) {
+          Utils.fluttertoast("✅ Recording saved at: ${filePath} (Size: $fileSize bytes)");
+        } else {
+          Utils.fluttertoast("❌ Recording file is empty! Try another source.");
+        }
+      } else {
+        Utils.fluttertoast("❌ Error stopping the recording");
+      }
+    } catch (e) {
+      Utils.fluttertoast("❌ Error stopping recording: $e");
+    }
+  }
+
+
+
+
+  void _listenForCallEvents() {
+    _phoneStateSubscription = PhoneState.stream.listen((PhoneState state) async {
+      if (state.status == PhoneStateStatus.CALL_STARTED && !_isRecording) {
+        _isRecording = true;
+        await startRecording();
+        setState(() {
+
+        });
+      } else if (state.status == PhoneStateStatus.CALL_ENDED && _isRecording) {
+        _isRecording = false;
+        await _stopRecording();
+        setState(() {
+
+        });
+      }
+    });
+  }
+
+  Future<void> playRecord() async {
+    if (_filePath == null || _filePath!.isEmpty) {
+      Utils.fluttertoast("❌ No recording found to play");
+      return;
+    }
+
+    final file = File(_filePath!);
+
+    // 🔹 Step 1: Check if the file exists
+    if (!await file.exists()) {
+      Utils.fluttertoast("❌ File does not exist at path: $_filePath");
+      return;
+    }
+
+    // 🔹 Step 2: Check if file has valid size
+    final fileSize = await file.length();
+    if (fileSize == 0) {
+      Utils.fluttertoast("❌ The file is empty, it might be corrupted.");
+      return;
+    }
+
+    try {
+      // 🔹 Step 3: Check if audio format is supported
+      if (!_filePath!.endsWith('.wav') && !_filePath!.endsWith('.mp3')) {
+        Utils.fluttertoast("❌ Unsupported file format! Only .wav and .mp3 are supported.");
+        return;
+      }
+
+      Utils.fluttertoast("✅ File is valid. Size: $fileSize bytes");
+
+      // // 🔹 Step 4: Stop any currently playing audio
+      // await audioPlayer.stop();
+
+      // 🔹 Step 5: Try setting the file path for playback
+      await audioPlayer.setFilePath(_filePath!);
+
+      // 🔹 Step 6: Play the audio
+      Utils.fluttertoast("▶️ Playing recording...");
+      await audioPlayer.play();
+    } catch (e) {
+      Utils.fluttertoast("❌ Error playing the recording: $e");
+    }
+  }
+
+
+  Future<void> makePhoneCall(String phone) async {
+    var url = 'tel:$phone';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      Utils.fluttertoast("❌ Could not launch dialer");
+    }
+  }
+
+
+
+  // Future<void> playRecord() async {
+  //   if (_filePath != null) {
+  //     try {
+  //       final file = File(_filePath!);
+  //       print("Recording file path: $_filePath");
+  //
+  //       if (await file.exists()) {
+  //         final fileSize = await file.length();
+  //         if (fileSize > 0) {
+  //           Utils.fluttertoast("File exists and has a valid size: $fileSize bytes");
+  //
+  //           await audioPlayer.stop();
+  //           Utils.fluttertoast("Start Playing...");
+  //
+  //           await audioPlayer.setFilePath(_filePath!);
+  //           await audioPlayer.play();
+  //         } else {
+  //           Utils.fluttertoast("❌ The file is empty: $fileSize bytes");
+  //         }
+  //       } else {
+  //         Utils.fluttertoast("❌ File does not exist at path: $_filePath");
+  //       }
+  //     } catch (e) {
+  //       Utils.fluttertoast("❌ Error playing the recording: $e");
+  //     }
+  //   } else {
+  //     Utils.fluttertoast("❌ No recording found to play");
+  //   }
+  // }
+
 
   @override
   Widget build(BuildContext context) {
@@ -289,7 +364,6 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
               children: [
                 Row(
                   children: [
-
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,11 +394,9 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                 buildDetailRow("Mobile", detail?.contactNo ?? "N/A"),
                 buildDetailRow("Gender", detail?.gender ?? "N/A"),
                 buildDetailRow("Remarks", detail?.remarks ?? "N/A"),
-                buildDetailRow(
-                  "Total Call Duration",
-                  formatCallDuration(detail?.totalCallDuration ?? "00:00:00"),
-                ),
+                buildDetailRow("Total Call Duration", formatCallDuration(detail?.totalCallDuration ?? "00:00:00"),),
                 const Divider(),
+
                 StreamBuilder(
                   stream: PhoneState.stream,
                   builder: (context, snapshot) {
@@ -368,39 +440,42 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       icon: Icons.call,
                       color: Colors.green,
                       onTap: () async {
-                        makePhoneCall("7387454587");
+                        // startRecording();
+                        makePhoneCall("7387454586");
                       },
                     ),
                     buildIconButton(
                       icon: Icons.email,
                       color: Colors.blue,
                       onTap: () async {
-                        String url = "mailto:${detail?.emailId ?? ""}";
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        } else {
-                          throw 'Could not send the email.';
-                        }
+                        _stopRecording();
+                        // String url = "mailto:${detail?.emailId ?? ""}";
+                        // if (await canLaunch(url)) {
+                        //   await launch(url);
+                        // } else {
+                        //   throw 'Could not send the email.';
+                        // }
                       },
                     ),
                     buildIconButton(
                       icon: FontAwesomeIcons.whatsapp,
                       color: Colors.teal,
                       onTap: () async {
-                        String url = "https://wa.me/${detail?.contactNo ?? ""}";
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        } else {
-                          throw 'Could not open WhatsApp.';
-                        }
+                        startRecording();
+                        // String url = "https://wa.me/${detail?.contactNo ?? ""}";
+                        // if (await canLaunch(url)) {
+                        //   await launch(url);
+                        // } else {
+                        //   throw 'Could not open WhatsApp.';
+                        // }
                       },
                     ),
                   ],
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    playRecording(filePath.toString());
-                  },  // Play button only if file exists
+                    playRecord();
+                  }, // Play button only if file exists
                   child: const Text('Play Recording'),
                 ),
                 // _buildActionButtons(context, detail: detail),
