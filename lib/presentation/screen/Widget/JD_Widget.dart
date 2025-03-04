@@ -70,38 +70,21 @@ class JobDetailUi extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  SizedBox(width: 16.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 30.r,
-                        backgroundColor: ToggleThemeData.Appcolor,
-                        child: Text(
-                          detail?.jdId?.substring(0, 2).toUpperCase() ?? "--",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      reausabletext(
+                        detail?.jdDesignation ?? "Unknown Designation",
+                        fontsize: 20,
+                        fontweight: FontWeight.bold,
                       ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            reausabletext(
-                              detail?.jdDesignation ?? "Unknown Designation",
-                              fontsize: 20,
-                              fontweight: FontWeight.bold,
-                            ),
-                            SizedBox(height: 4.h),
-                            reausabletext(
-                              detail?.jdLocation ?? "Unknown Location",
-                              fontsize: 14,
-                              color: Colors.grey,
-                            ),
-                          ],
-                        ),
-                      )
+                      SizedBox(height: 4.h),
+                      reausabletext(
+                        detail?.jdLocation ?? "Unknown Location",
+                        fontsize: 14,
+                        color: Colors.grey,
+                      ),
                     ],
                   ),
                   SizedBox(height: 20.h),

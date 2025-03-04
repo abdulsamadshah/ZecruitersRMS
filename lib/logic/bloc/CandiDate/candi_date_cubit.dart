@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:zecruiters_rms/core/constant/SecureSharedPref.dart';
 import 'package:zecruiters_rms/core/constant/global.dart';
@@ -11,6 +12,8 @@ part 'candi_date_state.dart';
 
 class CandiDateCubit extends Cubit<CandiDateState> {
   CandiDateCubit() : super(CandiDateInitial());
+  final comments = TextEditingController();
+  final GlobalKey<FormState> remarkKey = GlobalKey<FormState>();
 
   Future<void> getCandidateData(
       {required String jdId, required int listType}) async {
@@ -65,18 +68,18 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     try {
       emit(LoadingState());
       var data = {
-        // 'companyid': Global.storageServices.get(SecureSharedPreference.companyId),
-        // 'userid': "REC-63",
-        // 'access_rights': "38,9,11,12,39,30,15",
-        // 'jdid': "Z-2909",
-        // 'mobilno': "9867497137",
-        'companyid':
-            Global.storageServices.get(SecureSharedPreference.companyId),
-        'userid': Global.storageServices.getProfileData().loingId.toString(),
-        'access_rights':
-            Global.storageServices.getProfileData().accessRights.toString(),
-        'jdid': jdId,
-        'mobilno': mobNo,
+        'companyid': Global.storageServices.get(SecureSharedPreference.companyId),
+        'userid': "REC-63",
+        'access_rights': "38,9,11,12,39,30,15",
+        'jdid': "Z-2909",
+        'mobilno': "9867497137",
+        // 'companyid':
+        //     Global.storageServices.get(SecureSharedPreference.companyId),
+        // 'userid': Global.storageServices.getProfileData().loingId.toString(),
+        // 'access_rights':
+        //     Global.storageServices.getProfileData().accessRights.toString(),
+        // 'jdid': jdId,
+        // 'mobilno': mobNo,
       };
       var result = await CandiDate_Repo.getCallDataList(data);
       if (result.status == true) {

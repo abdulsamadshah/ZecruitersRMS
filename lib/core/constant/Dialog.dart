@@ -1,5 +1,5 @@
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -9,15 +9,16 @@ import 'package:zecruiters_rms/core/theme/themes_data.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 import '../../../gen/fonts.gen.dart';
+import '../../logic/bloc/CandiDate/candi_date_cubit.dart';
 
 class DialogBox {
   static Future<void> confirmationDialog(BuildContext context,
       {String? title,
-        String? desc,
-        String lefButtonName = "NO",
-        String rightButtonName = "YES",
-        void Function()? leftButtonOntap,
-        rightButtonOntap}) {
+      String? desc,
+      String lefButtonName = "NO",
+      String rightButtonName = "YES",
+      void Function()? leftButtonOntap,
+      rightButtonOntap}) {
     return showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -40,10 +41,10 @@ class DialogBox {
                 desc == null
                     ? const SizedBox()
                     : reausabletext(
-                  desc.tr,
-                  fontfamily: FontFamily.interMedium,
-                  fontsize: 13,
-                ),
+                        desc.tr,
+                        fontfamily: FontFamily.interMedium,
+                        fontsize: 13,
+                      ),
               ],
             ),
           ),
@@ -69,67 +70,109 @@ class DialogBox {
     );
   }
 
-  // static Future<void> logOutDialog(BuildContext buildcontext,
-  //     {String? title,
-  //     String? desc,
-  //     String lefButtonName = "NO",
-  //     String rightButtonName = "YES",
-  //     required ProfileBloc profileBloc}) {
-  //   return showCupertinoDialog(
-  //     context: buildcontext,
-  //     builder: (context) {
-  //       return CupertinoAlertDialog(
-  //         title: Padding(
-  //           padding: EdgeInsets.symmetric(horizontal: 15.w),
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             crossAxisAlignment: CrossAxisAlignment.center,
-  //             children: [
-  //               SizedBox(
-  //                 height: 15.h,
-  //               ),
-  //               reausabletext(
-  //                 title!.tr,
-  //                 fontfamily: FontFamily.interSemiBold,
-  //                 fontsize: 17,
-  //                 align: TextAlign.center,
-  //               ),
-  //               desc == null
-  //                   ? const SizedBox()
-  //                   : reausabletext(
-  //                       desc.tr,
-  //                       fontfamily: FontFamily.interMedium,
-  //                       fontsize: 13,
-  //                     ),
-  //             ],
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           CupertinoDialogAction(
-  //             onPressed: () {
-  //               Navigator.pop(context);
-  //             },
-  //             child: reausabletext(
-  //               lefButtonName.tr,
-  //               color: context.isDarkMode
-  //                   ? ToggleThemeData.white
-  //                   : ToggleThemeData.black,
-  //               fontsize: 16,
-  //             ),
-  //           ),
-  //           CupertinoDialogAction(
-  //             onPressed: () {
-  //               Navigator.pop(context);
-  //               GoRouter.of(context).goNamed(MyAppRouteConstants.loginScreen);
-  //
-  //               // profileBloc.add(LogOutEvent(context));
-  //             },
-  //             child: reausabletext(rightButtonName.tr,
-  //                 color: ToggleThemeData.Appcolor, fontsize: 16),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  static RemarkDialog(BuildContext context,
+      {required CandiDateCubit candiDateCubit}) async {
+    return showDialog(
+        context: context,
+        builder: (context) => StatefulBuilder(builder: (context, setState) {
+              return WillPopScope(
+                onWillPop: () async {
+                  return true;
+                },
+                child: AlertDialog(
+                  contentPadding: EdgeInsets.zero,
+                  insetPadding: EdgeInsets.only(left: 20.w, right: 20.w),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  content: Container(
+                      width: MediaQuery.sizeOf(context).width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        child: Form(
+                          key: candiDateCubit.remarkKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                              SizedBox(
+                                height: 15.h,
+                              ),
+                              TextFormField(
+                                controller: candiDateCubit.comments,
+                                keyboardType: TextInputType.phone,
+                                validator: (value) {
+                                  if(value!.isNotEmpty || value==null || value==""){
+                                    return "Comment can't be empty";
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                        color: ToggleThemeData.textbordercolor,
+                                        width: 2.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                        color: ToggleThemeData.textbordercolor,
+                                        width: 2.0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                        color: ToggleThemeData.Appcolor,
+                                        width: 2.0),
+                                  ),
+                                  disabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                        color: ToggleThemeData.textbordercolor,
+                                        width: 2.0),
+                                  ),
+                                  isDense: true,
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  hintText: "Enter Comments",
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 15.sp),
+                                  contentPadding: EdgeInsets.only(
+                                      top: 10.h, left: 15.w, bottom: 0.h),
+                                ),
+                                style: const TextStyle(color: Colors.black),
+                                maxLines: 2,
+                              ),
+                              SizedBox(
+                                height: 15.h,
+                              ),
+                              reausablebuttons(
+                                borderradiues: 25,
+                                title: "Submit",
+                                textcolor: Colors.black,
+                                ontap: () {
+                                  if (candiDateCubit.remarkKey.currentState!
+                                      .validate()) {
+
+                                  }
+                                },
+                              ),
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )),
+                ),
+              );
+            }));
+  }
 }

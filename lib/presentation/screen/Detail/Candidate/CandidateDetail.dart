@@ -15,8 +15,11 @@ import 'package:record/record.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/common_widget/appBar.dart';
+import 'package:zecruiters_rms/core/constant/Dialog.dart';
 import 'package:zecruiters_rms/core/constant/Utils.dart';
+import 'package:zecruiters_rms/core/theme/themes_data.dart';
 import 'package:zecruiters_rms/data/models/CandiDateDetailRes.dart';
+import 'package:zecruiters_rms/gen/fonts.gen.dart';
 import 'package:zecruiters_rms/logic/bloc/CandiDate/candi_date_cubit.dart';
 import 'package:zecruiters_rms/presentation/screen/Widget/CandiDate_widget.dart';
 
@@ -135,7 +138,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     if (!_isRecording) return;
 
     try {
-      await Future.delayed(Duration(milliseconds: 500)); // ✅ Ensures recording finishes
+      await Future.delayed(
+          Duration(milliseconds: 500)); // ✅ Ensures recording finishes
       String? filePath = await _recorder.stop();
 
       if (filePath != null) {
@@ -147,7 +151,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
         });
 
         if (fileSize > 0) {
-          Utils.fluttertoast("✅ Recording saved at: ${filePath} (Size: $fileSize bytes)");
+          Utils.fluttertoast(
+              "✅ Recording saved at: ${filePath} (Size: $fileSize bytes)");
         } else {
           Utils.fluttertoast("❌ Recording file is empty! Try another source.");
         }
@@ -159,23 +164,17 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     }
   }
 
-
-
-
   void _listenForCallEvents() {
-    _phoneStateSubscription = PhoneState.stream.listen((PhoneState state) async {
+    _phoneStateSubscription =
+        PhoneState.stream.listen((PhoneState state) async {
       if (state.status == PhoneStateStatus.CALL_STARTED && !_isRecording) {
         _isRecording = true;
         await startRecording();
-        setState(() {
-
-        });
+        setState(() {});
       } else if (state.status == PhoneStateStatus.CALL_ENDED && _isRecording) {
         _isRecording = false;
         await _stopRecording();
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
@@ -204,7 +203,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     try {
       // 🔹 Step 3: Check if audio format is supported
       if (!_filePath!.endsWith('.wav') && !_filePath!.endsWith('.mp3')) {
-        Utils.fluttertoast("❌ Unsupported file format! Only .wav and .mp3 are supported.");
+        Utils.fluttertoast(
+            "❌ Unsupported file format! Only .wav and .mp3 are supported.");
         return;
       }
 
@@ -224,7 +224,6 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     }
   }
 
-
   Future<void> makePhoneCall(String phone) async {
     var url = 'tel:$phone';
     if (await canLaunch(url)) {
@@ -233,8 +232,6 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
       Utils.fluttertoast("❌ Could not launch dialer");
     }
   }
-
-
 
   // Future<void> playRecord() async {
   //   if (_filePath != null) {
@@ -265,7 +262,6 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   //     Utils.fluttertoast("❌ No recording found to play");
   //   }
   // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -363,6 +359,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Column(
@@ -386,6 +383,17 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                         ],
                       ),
                     ),
+                    GestureDetector(
+                      onTap: () {
+                        DialogBox.RemarkDialog(context,
+                            candiDateCubit: candiDateCubit);
+                      },
+                      child: reausabletext("Edit",
+                          fontfamily: FontFamily.interSemiBold,
+                          color: ToggleThemeData.Appcolor,
+                          decorattion: TextDecoration.underline,
+                          fontsize: 19),
+                    ),
                   ],
                 ),
                 const Divider(),
@@ -394,7 +402,10 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                 buildDetailRow("Mobile", detail?.contactNo ?? "N/A"),
                 buildDetailRow("Gender", detail?.gender ?? "N/A"),
                 buildDetailRow("Remarks", detail?.remarks ?? "N/A"),
-                buildDetailRow("Total Call Duration", formatCallDuration(detail?.totalCallDuration ?? "00:00:00"),),
+                buildDetailRow(
+                  "Total Call Duration",
+                  formatCallDuration(detail?.totalCallDuration ?? "00:00:00"),
+                ),
                 const Divider(),
 
                 StreamBuilder(
