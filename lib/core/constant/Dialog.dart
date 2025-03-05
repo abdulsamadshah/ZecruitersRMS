@@ -2,14 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
-import 'package:zecruiters_rms/Routers/app_route_constants.dart';
+
 import 'package:zecruiters_rms/core/theme/themes_data.dart';
 
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 import '../../../gen/fonts.gen.dart';
+import '../../data/models/RemakListRes.dart';
 import '../../logic/bloc/CandiDate/candi_date_cubit.dart';
+import 'CustomDropdown.dart';
 
 class DialogBox {
   static Future<void> confirmationDialog(BuildContext context,
@@ -98,14 +99,41 @@ class DialogBox {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                height: 10.h,
+                                height: 20.h,
+                              ),
+
+                              reausabletext("Fill Remark Detail",fontfamily: FontFamily.interBold,fontsize: 20),
+                              SizedBox(
+                                height: 20.h,
+                              ),
+                              CustomDropdown(
+                                items: candiDateCubit.state.remarkData ?? [],
+                                hintText: "Select Client Name",
+                                selectedItem: candiDateCubit.state.SelectedremarkData != null
+                                    ? RemakListData(
+                                  id: candiDateCubit.state.SelectedremarkData['id'] ??
+                                      "",
+                                  remarks: candiDateCubit.state.SelectedremarkData[
+                                  'remarks'] ??
+                                      "Unknown",
+                                )
+                                    : null,
+                                onChanged: (RemakListData? value) {
+                                  if (value != null) {
+                                    candiDateCubit.SelectedRemarks({
+                                      'id': value.id,
+                                      'remarks': value.remarks
+                                    });
+
+                                  }
+                                },
                               ),
                               SizedBox(
                                 height: 15.h,
                               ),
                               TextFormField(
                                 controller: candiDateCubit.comments,
-                                keyboardType: TextInputType.phone,
+                                keyboardType: TextInputType.text,
                                 validator: (value) {
                                   if(value!.isNotEmpty || value==null || value==""){
                                     return "Comment can't be empty";
@@ -165,7 +193,7 @@ class DialogBox {
                                 },
                               ),
                               SizedBox(
-                                height: 10.h,
+                                height: 30.h,
                               ),
                             ],
                           ),

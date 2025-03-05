@@ -3,6 +3,7 @@ import 'package:zecruiters_rms/data/http/http_util.dart';
 import 'package:zecruiters_rms/data/models/CallDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
+import 'package:zecruiters_rms/data/models/RemakListRes.dart';
 
 class CandiDate_Repo{
   static Future<CandiDateListRes> getCandidateList(var data) async {
@@ -18,6 +19,11 @@ class CandiDate_Repo{
   static Future<CallDetailRes> getCallDataList(var data) async {
     var response = await HttpUtil().post("/Zecapis/calldata",data: data);
     return CallDetailRes.fromJson(response);
+  }
+
+  static Future<RemakListRes> getRemarkData(var data) async {
+    var response = await HttpUtil().post("/Zecapis/remarkslist",data: data);
+    return RemakListRes.fromJson(response);
   }
 
 }

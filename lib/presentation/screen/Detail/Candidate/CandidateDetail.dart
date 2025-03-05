@@ -385,8 +385,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        DialogBox.RemarkDialog(context,
-                            candiDateCubit: candiDateCubit);
+                     candiDateCubit.getReMarkList(context, cubit: candiDateCubit);
                       },
                       child: reausabletext("Edit",
                           fontfamily: FontFamily.interSemiBold,

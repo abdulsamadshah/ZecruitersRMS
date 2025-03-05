@@ -6,7 +6,12 @@ import 'package:zecruiters_rms/core/constant/global.dart';
 import 'package:zecruiters_rms/data/models/CallDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
+import 'package:zecruiters_rms/data/models/RemakListRes.dart';
 import 'package:zecruiters_rms/data/repositories/CandiDate_Repo.dart';
+
+import '../../../core/constant/Dialog.dart';
+import '../../../core/constant/Utils.dart';
+import '../../../core/constant/loading.dart';
 
 part 'candi_date_state.dart';
 
@@ -90,5 +95,68 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     } catch (e) {
       emit(LoadingError(e.toString()));
     }
+  }
+
+  Future<void> getReMarkList(BuildContext context,
+      {required CandiDateCubit cubit}) async {
+    try {
+   Loading().showloading(context);
+      var data = {
+        'companyid':
+            Global.storageServices.get(SecureSharedPreference.companyId),
+        'userid': Global.storageServices.getProfileData().loingId.toString(),
+        'access_rights':
+            Global.storageServices.getProfileData().accessRights.toString(),
+      };
+      var result = await CandiDate_Repo.getRemarkData(data);
+      if (result.status == true) {
+        Loading().dismissloading(context);
+        emit(state.copyWith(remarkData: result.data));
+        DialogBox.RemarkDialog(context,
+            candiDateCubit: cubit);
+      } else {
+        Loading().dismissloading(context);
+        Utils.fluttertoast(result.response.toString());
+      }
+    } catch (e) {
+      Loading().dismissloading(context);
+    Utils.fluttertoast(e.toString());
+    }
+  }
+
+  Future<void> SubmitReMarkList(BuildContext context,
+      {required String jdId, required String mobNo,candidateid,required CandiDateCubit cubit}) async {
+    try {
+   Loading().showloading(context);
+      var data = {
+        'companyid':
+            Global.storageServices.get(SecureSharedPreference.companyId),
+        'userid': Global.storageServices.getProfileData().loingId.toString(),
+        'access_rights':
+            Global.storageServices.getProfileData().accessRights.toString(),
+        'jdid': jdId,
+        'mobilno': mobNo,
+        'candidateid': candidateid,
+        'remarks': candidateid,
+        'comments': candidateid,
+      };
+      var result = await CandiDate_Repo.getRemarkData(data);
+      if (result.status == true) {
+        Loading().dismissloading(context);
+        emit(state.copyWith(remarkData: result.data));
+        DialogBox.RemarkDialog(context,
+            candiDateCubit: cubit);
+      } else {
+        Loading().dismissloading(context);
+        Utils.fluttertoast(result.response.toString());
+      }
+    } catch (e) {
+      Loading().dismissloading(context);
+    Utils.fluttertoast(e.toString());
+    }
+  }
+
+  void SelectedRemarks(dynamic data){
+   emit(state.copyWith(SelectedremarkData:data )) ;
   }
 }

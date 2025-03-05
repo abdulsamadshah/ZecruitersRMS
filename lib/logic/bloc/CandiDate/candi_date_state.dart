@@ -4,17 +4,22 @@ part of 'candi_date_cubit.dart';
 class CandiDateState {
   final List<CandiDateData>? listData;
   final List<CallDetail>? callData;
+
   CandiDateDetail? detail;
   final String? error;
-  CandiDateState({this.listData, this.error, this.detail,this.callData});
+  final List<RemakListData>? remarkData;
+  dynamic SelectedremarkData;
+  CandiDateState({this.listData, this.error, this.detail,this.callData,this.remarkData,this.SelectedremarkData});
 
   CandiDateState copyWith(
-      {List<CandiDateData>? listData, String? error, CandiDateDetail? detail,List<CallDetail>? callData}) {
+      {List<CandiDateData>? listData, String? error, CandiDateDetail? detail,List<CallDetail>? callData,List<RemakListData>? remarkData,dynamic SelectedremarkData}) {
     return CandiDateState(
         listData: listData ?? this.listData,
         error: error ?? this.error,
         detail: detail ?? this.detail,
-    callData: callData ?? this.callData
+    callData: callData ?? this.callData,
+      remarkData: remarkData ?? this.remarkData,
+      SelectedremarkData: SelectedremarkData ?? this.SelectedremarkData
     );
   }
 }
