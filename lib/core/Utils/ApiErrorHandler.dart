@@ -1,4 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:go_router/go_router.dart';
+import 'package:zecruiters_rms/core/Utils/Context_Utility.dart';
+
+import '../../Routers/app_route_constants.dart';
+import '../constant/SecureSharedPref.dart';
+import '../constant/global.dart';
 
 class ApiErrorHandler {
   static String handleDioError(DioException e) {
@@ -7,6 +13,9 @@ class ApiErrorHandler {
         case 400:
           return "Bad request. Please check your input!";
         case 401:
+          Global.storageServices.remove(SecureSharedPreference.deviceToken);
+          GoRouter.of(ContextUtility.context!)
+              .goNamed(MyAppRouteConstants.loginScreen);
           return "Unauthorized. Please log in again!";
         case 403:
           return "Forbidden. You do not have permission!";

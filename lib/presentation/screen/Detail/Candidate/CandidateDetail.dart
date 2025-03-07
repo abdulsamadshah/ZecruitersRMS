@@ -41,6 +41,7 @@ class CandidateDetailScreen extends StatefulWidget {
 }
 
 class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
+  final CandiDateCubit RemarksCubit = CandiDateCubit();
   final CandiDateCubit candiDateCubit = CandiDateCubit();
   final CandiDateCubit callDetailCubit = CandiDateCubit();
 
@@ -87,7 +88,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     super.initState();
 
     candiDateCubit.getCandidateDetailData(
-        jdid: widget.jdId, candidateid: widget.candiDateId);
+        jdid: widget.jdId, candidateid: widget.candiDateId, remarkList: RemarksCubit);
     callDetailCubit.getCallDataList(jdId: widget.jdId, mobNo: widget.mobNo);
     _requestPermissions();
     _listenForCallEvents();
@@ -283,7 +284,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                         retry: () {
                           candiDateCubit.getCandidateDetailData(
                               jdid: widget.jdId,
-                              candidateid: widget.candiDateId);
+                              candidateid: widget.candiDateId,remarkList: RemarksCubit);
                         },
                         messgae: networkconnectionlost.error.toString());
 
@@ -385,7 +386,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                     candiDateCubit.getReMarkList(context, cubit: candiDateCubit);
+                        RemarksCubit.getReMarkList(context, cubit: RemarksCubit,jdId: detail!.jdId.toString(),mobNo: detail!.contactNo.toString(),candidateid: widget.candiDateId);
                       },
                       child: reausabletext("Edit",
                           fontfamily: FontFamily.interSemiBold,

@@ -6,7 +6,7 @@ import 'package:zecruiters_rms/data/models/CommonPostRes.dart';
 import '../models/PersonalDetail_Res.dart';
 
 class AuthRepo {
-  static login({dynamic param}) async {
+  static Future<LoginRes> login({dynamic param}) async {
     var response = await HttpUtil().post("/Zecapis/login", data: param);
     return LoginRes.fromJson(response);
   }

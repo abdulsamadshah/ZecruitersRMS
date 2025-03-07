@@ -52,13 +52,13 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
 
       if (result.status == true) {
         Global.storageServices
-            .setString(SecureSharedPreference.deviceToken, result.token);
+            .setString(SecureSharedPreference.deviceToken, result.token.toString());
         Loading().dismissloading(event.context);
         Pref_Services().saveProfileData(result.data);
         Global.storageServices.setString(SecureSharedPreference.companyId,state.companyId);
         GoRouter.of(event.context)
             .pushNamed(MyAppRouteConstants.dashBoardScreen);
-      } else {
+      }else if (result.status == false) {
         Loading().dismissloading(event.context);
 
         CommonDialog.errorMessage(result.response);

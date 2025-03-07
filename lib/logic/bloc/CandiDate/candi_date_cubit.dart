@@ -45,7 +45,9 @@ class CandiDateCubit extends Cubit<CandiDateState> {
   }
 
   Future<void> getCandidateDetailData(
-      {required String jdid, candidateid}) async {
+      {required String jdid,
+      candidateid,
+      required CandiDateCubit remarkList}) async {
     try {
       emit(LoadingState());
       var data = {
@@ -60,6 +62,11 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       var result = await CandiDate_Repo.getCandiDateDetail(param: data);
       if (result.status == true) {
         emit(CandiDateDetailLoadingSuccess(detail: result.data?[0]));
+        remarkList.SelectedRemarks({
+          'id': result.data?[0].remarkstid.toString(),
+          'remarks': result.data?[0].remarkst.toString()
+        });
+        remarkList.comments.text = result.data![0].remarks!.toString();
       } else {
         emit(LoadingError(result.response.toString()));
       }
@@ -73,7 +80,8 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     try {
       emit(LoadingState());
       var data = {
-        'companyid': Global.storageServices.get(SecureSharedPreference.companyId),
+        'companyid':
+            Global.storageServices.get(SecureSharedPreference.companyId),
         'userid': "REC-63",
         'access_rights': "38,9,11,12,39,30,15",
         'jdid': "Z-2909",
@@ -97,10 +105,15 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     }
   }
 
-  Future<void> getReMarkList(BuildContext context,
-      {required CandiDateCubit cubit}) async {
+  Future<void> getReMarkList(
+    BuildContext context, {
+    required CandiDateCubit cubit,
+    required String jdId,
+    required String mobNo,
+    candidateid,
+  }) async {
     try {
-   Loading().showloading(context);
+      Loading().showloading(context);
       var data = {
         'companyid':
             Global.storageServices.get(SecureSharedPreference.companyId),
@@ -112,22 +125,37 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       if (result.status == true) {
         Loading().dismissloading(context);
         emit(state.copyWith(remarkData: result.data));
-        DialogBox.RemarkDialog(context,
-            candiDateCubit: cubit);
+        DialogBox.RemarkDialog(
+          context,
+          candiDateCubit: cubit,
+          callBack: (status) {
+            if (status) {
+              Navigator.pop(context);
+              SubmitReMarkList(context,
+                  mobNo: mobNo,
+                  jdId: jdId,
+                  candidateid: candidateid,
+                  cubit: cubit);
+            }
+          },
+        );
       } else {
         Loading().dismissloading(context);
         Utils.fluttertoast(result.response.toString());
       }
     } catch (e) {
       Loading().dismissloading(context);
-    Utils.fluttertoast(e.toString());
+      Utils.fluttertoast(e.toString());
     }
   }
 
   Future<void> SubmitReMarkList(BuildContext context,
-      {required String jdId, required String mobNo,candidateid,required CandiDateCubit cubit}) async {
+      {required String jdId,
+      required String mobNo,
+      candidateid,
+      required CandiDateCubit cubit}) async {
     try {
-   Loading().showloading(context);
+      Loading().showloading(context);
       var data = {
         'companyid':
             Global.storageServices.get(SecureSharedPreference.companyId),
@@ -137,26 +165,26 @@ class CandiDateCubit extends Cubit<CandiDateState> {
         'jdid': jdId,
         'mobilno': mobNo,
         'candidateid': candidateid,
-        'remarks': candidateid,
-        'comments': candidateid,
+        'remarks': cubit.state.SelectedremarkData['id'],
+        'comments': cubit.comments.text,
       };
       var result = await CandiDate_Repo.getRemarkData(data);
       if (result.status == true) {
         Loading().dismissloading(context);
-        emit(state.copyWith(remarkData: result.data));
-        DialogBox.RemarkDialog(context,
-            candiDateCubit: cubit);
+        Utils.fluttertoast("Remark Submit Successfully");
+        getCandidateDetailData(
+            jdid: jdId, candidateid: candidateid, remarkList: cubit);
       } else {
         Loading().dismissloading(context);
         Utils.fluttertoast(result.response.toString());
       }
     } catch (e) {
       Loading().dismissloading(context);
-    Utils.fluttertoast(e.toString());
+      Utils.fluttertoast(e.toString());
     }
   }
 
-  void SelectedRemarks(dynamic data){
-   emit(state.copyWith(SelectedremarkData:data )) ;
+  void SelectedRemarks(dynamic data) {
+    emit(state.copyWith(SelectedremarkData: data));
   }
 }

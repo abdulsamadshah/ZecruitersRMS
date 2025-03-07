@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -72,7 +74,8 @@ class DialogBox {
   }
 
   static RemarkDialog(BuildContext context,
-      {required CandiDateCubit candiDateCubit}) async {
+      {required CandiDateCubit candiDateCubit,
+      void Function(bool)? callBack}) async {
     return showDialog(
         context: context,
         builder: (context) => StatefulBuilder(builder: (context, setState) {
@@ -81,6 +84,7 @@ class DialogBox {
                   return true;
                 },
                 child: AlertDialog(
+                  backgroundColor: Colors.white,
                   contentPadding: EdgeInsets.zero,
                   insetPadding: EdgeInsets.only(left: 20.w, right: 20.w),
                   shape: const RoundedRectangleBorder(
@@ -101,30 +105,34 @@ class DialogBox {
                               SizedBox(
                                 height: 20.h,
                               ),
-
-                              reausabletext("Fill Remark Detail",fontfamily: FontFamily.interBold,fontsize: 20),
+                              reausabletext("Fill Remark Detail",
+                                  fontfamily: FontFamily.interBold,
+                                  fontsize: 20),
                               SizedBox(
                                 height: 20.h,
                               ),
                               CustomDropdown(
                                 items: candiDateCubit.state.remarkData ?? [],
                                 hintText: "Select Client Name",
-                                selectedItem: candiDateCubit.state.SelectedremarkData != null
-                                    ? RemakListData(
-                                  id: candiDateCubit.state.SelectedremarkData['id'] ??
-                                      "",
-                                  remarks: candiDateCubit.state.SelectedremarkData[
-                                  'remarks'] ??
-                                      "Unknown",
-                                )
-                                    : null,
+                                selectedItem:
+                                    candiDateCubit.state.SelectedremarkData !=
+                                            null
+                                        ? RemakListData(
+                                            id: candiDateCubit.state
+                                                    .SelectedremarkData['id'] ??
+                                                "",
+                                            remarks: candiDateCubit.state
+                                                        .SelectedremarkData[
+                                                    'remarks'] ??
+                                                "Unknown",
+                                          )
+                                        : null,
                                 onChanged: (RemakListData? value) {
                                   if (value != null) {
                                     candiDateCubit.SelectedRemarks({
                                       'id': value.id,
                                       'remarks': value.remarks
                                     });
-
                                   }
                                 },
                               ),
@@ -135,16 +143,18 @@ class DialogBox {
                                 controller: candiDateCubit.comments,
                                 keyboardType: TextInputType.text,
                                 validator: (value) {
-                                  if(value!.isNotEmpty || value==null || value==""){
+                                  if (value!.isEmpty ||
+                                      value == null ||
+                                      value == "") {
                                     return "Comment can't be empty";
-                                  }else{
+                                  } else {
                                     return null;
                                   }
                                 },
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
+                                    borderSide: const BorderSide(
                                         color: ToggleThemeData.textbordercolor,
                                         width: 2.0),
                                   ),
@@ -176,7 +186,7 @@ class DialogBox {
                                       top: 10.h, left: 15.w, bottom: 0.h),
                                 ),
                                 style: const TextStyle(color: Colors.black),
-                                maxLines: 2,
+                                maxLines: 3,
                               ),
                               SizedBox(
                                 height: 15.h,
@@ -188,7 +198,7 @@ class DialogBox {
                                 ontap: () {
                                   if (candiDateCubit.remarkKey.currentState!
                                       .validate()) {
-
+                                    callBack!(true);
                                   }
                                 },
                               ),
