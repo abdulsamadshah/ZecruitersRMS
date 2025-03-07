@@ -80,19 +80,19 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     try {
       emit(LoadingState());
       var data = {
-        'companyid':
-            Global.storageServices.get(SecureSharedPreference.companyId),
-        'userid': "REC-63",
-        'access_rights': "38,9,11,12,39,30,15",
-        'jdid': "Z-2909",
-        'mobilno': "9867497137",
         // 'companyid':
         //     Global.storageServices.get(SecureSharedPreference.companyId),
-        // 'userid': Global.storageServices.getProfileData().loingId.toString(),
-        // 'access_rights':
-        //     Global.storageServices.getProfileData().accessRights.toString(),
-        // 'jdid': jdId,
-        // 'mobilno': mobNo,
+        // 'userid': "REC-63",
+        // 'access_rights': "38,9,11,12,39,30,15",
+        // 'jdid': "Z-2909",
+        // 'mobilno': "9867497137",
+        'companyid':
+            Global.storageServices.get(SecureSharedPreference.companyId),
+        'userid': Global.storageServices.getProfileData().loingId.toString(),
+        'access_rights':
+            Global.storageServices.getProfileData().accessRights.toString(),
+        'jdid': jdId,
+        'mobilno': mobNo,
       };
       var result = await CandiDate_Repo.getCallDataList(data);
       if (result.status == true) {
@@ -111,6 +111,7 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     required String jdId,
     required String mobNo,
     candidateid,
+        void Function(bool)? RemarkCallBack,
   }) async {
     try {
       Loading().showloading(context);
@@ -135,7 +136,7 @@ class CandiDateCubit extends Cubit<CandiDateState> {
                   mobNo: mobNo,
                   jdId: jdId,
                   candidateid: candidateid,
-                  cubit: cubit);
+                  cubit: cubit,RemarkCallBack: RemarkCallBack);
             }
           },
         );
@@ -153,7 +154,7 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       {required String jdId,
       required String mobNo,
       candidateid,
-      required CandiDateCubit cubit}) async {
+      required CandiDateCubit cubit,void Function(bool)? RemarkCallBack}) async {
     try {
       Loading().showloading(context);
       var data = {
@@ -168,15 +169,14 @@ class CandiDateCubit extends Cubit<CandiDateState> {
         'remarks': cubit.state.SelectedremarkData['id'],
         'comments': cubit.comments.text,
       };
-      var result = await CandiDate_Repo.getRemarkData(data);
+      var result = await CandiDate_Repo.postRemarkData(data);
       if (result.status == true) {
         Loading().dismissloading(context);
         Utils.fluttertoast("Remark Submit Successfully");
-        getCandidateDetailData(
-            jdid: jdId, candidateid: candidateid, remarkList: cubit);
+        RemarkCallBack!(true);
       } else {
         Loading().dismissloading(context);
-        Utils.fluttertoast(result.response.toString());
+        Utils.fluttertoast(result.message.toString());
       }
     } catch (e) {
       Loading().dismissloading(context);

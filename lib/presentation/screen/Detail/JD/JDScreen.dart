@@ -30,7 +30,7 @@ class _JobDetailState extends State<JobDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mainAppBar(context, title: "JD Lists", type: "basic",),
+      appBar: mainAppBar(context, title: "JD Lists", type: "basic",isLeading: false),
       body: Padding(
           padding: EdgeInsets.all(8.0.r),
           child: BlocConsumer<JdDetailCubit, JdDetailState>(

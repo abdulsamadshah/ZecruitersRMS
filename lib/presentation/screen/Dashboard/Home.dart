@@ -44,183 +44,172 @@ class _HomeState extends State<Home> {
   }
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        DialogBox.confirmationDialog(context,
-            title: 'Are you sure you want to exit?',
-            leftButtonOntap: () {
-              Navigator.pop(context);
-            },
-            rightButtonOntap: () => exit(0));
-        return true;
-      },
-      child: Scaffold(
-          drawer: Navigationbar(
-              // profileState: ProfileState,
-              ),
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    ToggleThemeData.Appcolor,
-                    ToggleThemeData.purple,
-                  ],
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppBar(
-                    leading: Builder(
-                      builder: (context) => InkWell(
-                        onTap: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                        child: reausableIcon(
-                            icon: Icons.menu, color: Colors.white, size: 30),
-                      ),
-                    ),
-                    elevation: 0,
-                    backgroundColor: Colors.transparent,
-                    actions: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 0.w),
-                        child: InkWell(
-                          onTap: () {},
-                          child: CircleAvatar(
-                            radius: 28.r,
-                            backgroundColor: Colors.white,
-                            child: CircleAvatar(
-                              radius: 27.r,
-                              backgroundColor: Colors.white,
-                              backgroundImage:
-                                  NetworkImage(MyAppTheme.ProfilenotFoundImg),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10.w,
-                        height: 10.h,
-                      ),
-                    ],
-                  ),
+    return Scaffold(
+        drawer: Navigationbar(
+            // profileState: ProfileState,
+            ),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ToggleThemeData.Appcolor,
+                  ToggleThemeData.purple,
                 ],
               ),
             ),
-          ),
-          body: BlocBuilder<DashboardCubit, DashboardState>(
-            bloc: dashCubit,
-            builder: (context, state) => Stack(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.maxFinite,
-                  height: 150.h,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        ToggleThemeData.Appcolor,
-                        ToggleThemeData.purple,
-                      ],
+                AppBar(
+                  leading: Builder(
+                    builder: (context) => InkWell(
+                      onTap: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                      child: reausableIcon(
+                          icon: Icons.menu, color: Colors.white, size: 30),
                     ),
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        reausabletext("Welcome",
-                            fontfamily: FontFamily.interBold,
-                            fontsize: 30,
-                            color: ToggleThemeData.white,
-                            fontweight: FontWeight.w800),
-                        reausabletext(
-                            "${Global.storageServices.getProfileData().firstName.toString() ?? ""} ${Global.storageServices.getProfileData().lastName.toString() ?? ""}",
-                            fontfamily: FontFamily.interMedium,
-                            fontsize: 20,
-                            color: ToggleThemeData.white),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: 110.h,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: ToggleThemeData.white,
-                      borderRadius: BorderRadius.circular(30.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 15.w, vertical: 15.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                state.selectedDate != null
-                                    ? DateFormat('yyyy-MM-dd')
-                                        .format(state.selectedDate)
-                                    : "Select Date",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.calendar_today,
-                                    color: Colors.blue),
-                                onPressed: () => dashCubit.pickDate(context,
-                                    cubit: dashCubit),
-                              ),
-                            ],
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  actions: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 0.w),
+                      child: InkWell(
+                        onTap: () {},
+                        child: CircleAvatar(
+                          radius: 28.r,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(
+                            radius: 27.r,
+                            backgroundColor: Colors.white,
+                            backgroundImage:
+                                NetworkImage(MyAppTheme.ProfilenotFoundImg),
                           ),
-                          SizedBox(height: 15.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                               OrderWidget(
-                                color: Color.fromRGBO(5, 0, 255, 0.9),
-                                image: AssetImage('asset/images/docc1.png'),
-                                percent: '0',
-                                subTitle: 'Total CALL',
-                                title:state.detail?.tOTALCALL ?? "0",
-                              ),
-                              SizedBox(
-                                width: 15.w,
-                              ),
-                               OrderWidget(
-                                color: Color.fromRGBO(0, 184, 212, 1),
-                                image: AssetImage('asset/images/doc4.png'),
-                                percent: '0',
-                                subTitle: 'Valid CALL',
-                                title: state.detail?.vALIDCALL ?? "0",
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 15.h,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                    // height: 580.h,
-                  ),
+                    SizedBox(
+                      width: 10.w,
+                      height: 10.h,
+                    ),
+                  ],
                 ),
               ],
             ),
-          )),
-    );
+          ),
+        ),
+        body: BlocBuilder<DashboardCubit, DashboardState>(
+          bloc: dashCubit,
+          builder: (context, state) => Stack(
+            children: [
+              Container(
+                width: double.maxFinite,
+                height: 150.h,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      ToggleThemeData.Appcolor,
+                      ToggleThemeData.purple,
+                    ],
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      reausabletext("Welcome",
+                          fontfamily: FontFamily.interBold,
+                          fontsize: 30,
+                          color: ToggleThemeData.white,
+                          fontweight: FontWeight.w800),
+                      reausabletext(
+                          "${Global.storageServices.getProfileData().firstName.toString() ?? ""} ${Global.storageServices.getProfileData().lastName.toString() ?? ""}",
+                          fontfamily: FontFamily.interMedium,
+                          fontsize: 20,
+                          color: ToggleThemeData.white),
+                    ],
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 110.h,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ToggleThemeData.white,
+                    borderRadius: BorderRadius.circular(30.r),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 15.w, vertical: 15.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              state.selectedDate != null
+                                  ? DateFormat('yyyy-MM-dd')
+                                      .format(state.selectedDate)
+                                  : "Select Date",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.calendar_today,
+                                  color: Colors.blue),
+                              onPressed: () => dashCubit.pickDate(context,
+                                  cubit: dashCubit),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                             OrderWidget(
+                              color: Color.fromRGBO(5, 0, 255, 0.9),
+                              image: AssetImage('asset/images/docc1.png'),
+                              percent: '0',
+                              subTitle: 'Total CALL',
+                              title:state.detail?.tOTALCALL ?? "0",
+                            ),
+                            SizedBox(
+                              width: 15.w,
+                            ),
+                             OrderWidget(
+                              color: Color.fromRGBO(0, 184, 212, 1),
+                              image: AssetImage('asset/images/doc4.png'),
+                              percent: '0',
+                              subTitle: 'Valid CALL',
+                              title: state.detail?.vALIDCALL ?? "0",
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 15.h,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // height: 580.h,
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
 

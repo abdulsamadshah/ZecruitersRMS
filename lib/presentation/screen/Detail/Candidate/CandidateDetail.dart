@@ -386,7 +386,12 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        RemarksCubit.getReMarkList(context, cubit: RemarksCubit,jdId: detail!.jdId.toString(),mobNo: detail!.contactNo.toString(),candidateid: widget.candiDateId);
+                        RemarksCubit.getReMarkList(context, cubit: RemarksCubit,jdId: detail!.jdId.toString(),mobNo: detail!.contactNo.toString(),candidateid: widget.candiDateId,RemarkCallBack: (success) {
+                         if(success) {
+                           candiDateCubit.getCandidateDetailData(
+                               jdid: widget.jdId, candidateid: widget.candiDateId, remarkList: RemarksCubit);
+                         }
+                        },);
                       },
                       child: reausabletext("Edit",
                           fontfamily: FontFamily.interSemiBold,

@@ -8,7 +8,7 @@ import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 
 PreferredSize mainAppBar(BuildContext context,
-    {String? title, bool centerTitle = true,String? type}) {
+    {String? title, bool centerTitle = true,String? type,bool isLeading=true}) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(kToolbarHeight),
     child: Container(
@@ -26,7 +26,7 @@ PreferredSize mainAppBar(BuildContext context,
         ),
       ),
       child: AppBar(
-        leading: Padding(
+        leading: isLeading==false?SizedBox():Padding(
           padding: EdgeInsets.only(left: 15.w),
           child: InkWell(
             onTap: () {
