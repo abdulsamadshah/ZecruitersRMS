@@ -42,12 +42,12 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       Loading().showloading(event.context);
       var result = await AuthRepo.login(
           param: {
-            // "companyid": state.companyId,
-            // "email": state.emailId,
-            // "password": state.password,
-            "companyid": "PAPERPINK",
-            "email": "krutika@zecruiters.com",
-            "password": 'Krutika@123',
+            "companyid": state.companyId,
+            "email": state.emailId,
+            "password": state.password,
+            // "companyid": "PAPERPINK",
+            // "email": "krutika@zecruiters.com",
+            // "password": 'Krutika@123',
           });
 
       if (result.status == true) {
@@ -55,8 +55,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
             .setString(SecureSharedPreference.deviceToken, result.token.toString());
         Loading().dismissloading(event.context);
         Pref_Services().saveProfileData(result.data);
-        Global.storageServices.setString(SecureSharedPreference.companyId,"PAPERPINK");
-        // Global.storageServices.setString(SecureSharedPreference.companyId,state.companyId);
+        // Global.storageServices.setString(SecureSharedPreference.companyId,"PAPERPINK");
+        Global.storageServices.setString(SecureSharedPreference.companyId,state.companyId);
         GoRouter.of(event.context)
             .pushNamed(MyAppRouteConstants.dashBoardScreen);
       }else if (result.status == false) {

@@ -413,6 +413,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                 ),
                 const Divider(),
 
+                /*
+               // Call Recording functionality
                 StreamBuilder(
                   stream: PhoneState.stream,
                   builder: (context, snapshot) {
@@ -449,6 +451,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                   },
                 ),
 
+                 */
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -457,7 +461,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       color: Colors.green,
                       onTap: () async {
                         // startRecording();
-                        makePhoneCall("7387454586");
+                        makePhoneCall(detail!.contactNo.toString());
                       },
                     ),
                     buildIconButton(
@@ -488,12 +492,12 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                     ),
                   ],
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    playRecord();
-                  }, // Play button only if file exists
-                  child: const Text('Play Recording'),
-                ),
+                // ElevatedButton(
+                //   onPressed: () {
+                //     playRecord();
+                //   }, // Play button only if file exists
+                //   child: const Text('Play Recording'),
+                // ),
                 // _buildActionButtons(context, detail: detail),
               ],
             ),
