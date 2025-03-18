@@ -8,7 +8,7 @@ import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 
 PreferredSize mainAppBar(BuildContext context,
-    {String? title, bool centerTitle = true,String? type,bool isLeading=true}) {
+    {String? title, bool centerTitle = true,String? type,bool isLeading=true,List<Widget>? actions}) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(kToolbarHeight),
     child: Container(
@@ -53,26 +53,7 @@ PreferredSize mainAppBar(BuildContext context,
           color: Colors.white,
           fontfamily: FontFamily.interSemiBold,
         ),
-        actions: [
-          // Padding(
-          //   padding: EdgeInsets.only(left: 0.w),
-          //   child: InkWell(
-          //     onTap: () {},
-          //     child: CircleAvatar(
-          //       radius: 18.r,
-          //       backgroundColor: Colors.white,
-          //       child: reausableIcon(
-          //           icon: Icons.notifications_outlined,
-          //           color: Colors.black,
-          //           size: 23),
-          //     ),
-          //   ),
-          // ),
-          SizedBox(
-            width: 10.w,
-            height: 10.h,
-          ),
-        ],
+        actions: actions,
       ),
     ),
   );

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/constant/SecureSharedPref.dart';
 import 'package:zecruiters_rms/core/constant/global.dart';
 import 'package:zecruiters_rms/data/models/CallDetailRes.dart';
@@ -8,7 +12,7 @@ import 'package:zecruiters_rms/data/models/CandiDateDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
 import 'package:zecruiters_rms/data/models/RemakListRes.dart';
 import 'package:zecruiters_rms/data/repositories/CandiDate_Repo.dart';
-
+import 'package:http_parser/http_parser.dart';
 import '../../../core/constant/Dialog.dart';
 import '../../../core/constant/Utils.dart';
 import '../../../core/constant/loading.dart';
@@ -19,6 +23,63 @@ class CandiDateCubit extends Cubit<CandiDateState> {
   CandiDateCubit() : super(CandiDateInitial());
   final comments = TextEditingController();
   final GlobalKey<FormState> remarkKey = GlobalKey<FormState>();
+
+
+  bool isPriceLowToHigh = true;
+  bool isAZSorted = false;
+  List<CandiDateData> canDiDateModel = [];
+  List<CandiDateData> allcanDiDate = [];
+  List<CandiDateData> filteredCandiDate = [];
+
+  void searchCandiDate(String query) {
+    query = query.trim();
+    if (allcanDiDate.isEmpty) {
+      return;
+    }
+
+    if (query.isEmpty) {
+      canDiDateModel = allcanDiDate;
+    } else {
+      canDiDateModel = allcanDiDate.where((product) {
+        final productNameMatch =
+            product.jdId?.toLowerCase().contains(query.toLowerCase()) ??
+                false;
+        final productSizeMatch =
+            product.firstName?.toLowerCase().contains(query.toLowerCase()) ??
+                false;
+        final productThicknessMatch = product.contactNo
+            ?.toLowerCase()
+            .contains(query.toLowerCase()) ??
+            false;
+        return productNameMatch || productSizeMatch || productThicknessMatch;
+      }).toList();
+    }
+
+    emit(CandiDateLoadingSuccess(listData: canDiDateModel));
+    // emit(ProductLoaded(productModel: productModel, filterCount: filterCount));
+  }
+
+
+  void sortProductsAlphabetically(bool isAscending) {
+    filteredCandiDate = List.from(allcanDiDate);
+
+    if (isAscending) {
+      filteredCandiDate.sort((a, b) => a.firstName!.compareTo(b.firstName!));
+    } else {
+      filteredCandiDate.sort((a, b) => b.firstName!.compareTo(a.firstName!));
+    }
+
+    isAZSorted = isAscending;
+    emit(CandiDateLoadingSuccess(listData: filteredCandiDate));
+
+  }
+
+  void resetFilters() {
+    filteredCandiDate = List.from(allcanDiDate);
+    isPriceLowToHigh = true;
+    isAZSorted = false;
+    emit(CandiDateLoadingSuccess(listData: allcanDiDate));
+  }
 
   Future<void> getCandidateData(
       {required String jdId, required int listType}) async {
@@ -35,6 +96,8 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       };
       var result = await CandiDate_Repo.getCandidateList(data);
       if (result.status == true) {
+        canDiDateModel = result.data!;
+        allcanDiDate = result.data!;
         emit(CandiDateLoadingSuccess(listData: result.data));
       } else {
         emit(LoadingError(result.response.toString()));
@@ -111,7 +174,7 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     required String jdId,
     required String mobNo,
     candidateid,
-        void Function(bool)? RemarkCallBack,
+    void Function(bool)? RemarkCallBack,
   }) async {
     try {
       Loading().showloading(context);
@@ -136,7 +199,8 @@ class CandiDateCubit extends Cubit<CandiDateState> {
                   mobNo: mobNo,
                   jdId: jdId,
                   candidateid: candidateid,
-                  cubit: cubit,RemarkCallBack: RemarkCallBack);
+                  cubit: cubit,
+                  RemarkCallBack: RemarkCallBack);
             }
           },
         );
@@ -154,7 +218,8 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       {required String jdId,
       required String mobNo,
       candidateid,
-      required CandiDateCubit cubit,void Function(bool)? RemarkCallBack}) async {
+      required CandiDateCubit cubit,
+      void Function(bool)? RemarkCallBack}) async {
     try {
       Loading().showloading(context);
       var data = {
@@ -186,5 +251,88 @@ class CandiDateCubit extends Cubit<CandiDateState> {
 
   void SelectedRemarks(dynamic data) {
     emit(state.copyWith(SelectedremarkData: data));
+  }
+
+  Future<void> CallPostRecore(BuildContext context,
+      {required String jdId,
+      required String mobNo,
+      candidateid,
+      required CandiDateCubit cubit,
+      void Function(bool)? RecordCallBack,
+      required dynamic callLog}) async {
+    try {
+      Loading().showloading(context);
+
+      String filePath = await _getFilePath();
+      FormData data = FormData.fromMap({
+        'companyid':
+            Global.storageServices.get(SecureSharedPreference.companyId),
+        'userid': Global.storageServices.getProfileData().loingId.toString(),
+        'access_rights':
+            Global.storageServices.getProfileData().accessRights.toString(),
+        'jdid': jdId,
+        'mobilno': mobNo,
+        'candidateid': candidateid,
+        'call_start_time': callLog['call_start_time'],
+        'call_end_time': callLog['call_end_time'],
+        'call_duration': callLog['call_duration'],
+      });
+
+      data.files.add(MapEntry(
+        'files',
+        await MultipartFile.fromFile(
+          filePath,
+          filename: "call_recording.mp3",
+          contentType: MediaType("audio", "mpeg"),
+        ),
+      ));
+
+      var result = await CandiDate_Repo.postCallRecordStore(data);
+      if (result.status == true) {
+        Loading().dismissloading(context);
+        Utils.fluttertoast("Submit Successfully");
+        RecordCallBack!(true);
+      } else {
+        Loading().dismissloading(context);
+        Utils.fluttertoast(result.response.toString());
+      }
+    } catch (e) {
+      Loading().dismissloading(context);
+      Utils.fluttertoast(e.toString());
+    }
+  }
+
+  Future<String> _getFilePath() async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/dummy.mp3');
+
+    if (!(await file.exists())) {
+      await file.writeAsBytes(List.filled(1024, 0));
+    }
+
+    return file.path;
+  }
+
+
+  Future<void> makePhoneCall(String phone) async {
+    var url = 'tel:7387454586';
+    // var url = 'tel:$phone';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      Utils.fluttertoast("❌ Could not launch dialer");
+    }
+  }
+
+  String formatTime(DateTime time) {
+    return "${time.hour.toString().padLeft(2, '0')}:"
+        "${time.minute.toString().padLeft(2, '0')}:"
+        "${time.second.toString().padLeft(2, '0')}";
+  }
+
+  String formatDuration(Duration duration) {
+    return "${duration.inHours.toString().padLeft(2, '0')}:"
+        "${(duration.inMinutes % 60).toString().padLeft(2, '0')}:"
+        "${(duration.inSeconds % 60).toString().padLeft(2, '0')}";
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -44,7 +45,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   final CandiDateCubit RemarksCubit = CandiDateCubit();
   final CandiDateCubit candiDateCubit = CandiDateCubit();
   final CandiDateCubit callDetailCubit = CandiDateCubit();
-
+  DateTime? callStartTime;
+  DateTime? callEndTime;
   StreamSubscription<PhoneState>? _phoneStateSubscription;
   final AudioPlayer audioPlayer = AudioPlayer();
   final AudioRecorder _recorder = AudioRecorder();
@@ -53,18 +55,10 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
 
   bool granted = false;
   var isCallOngoing = false;
-  DateTime? callStartTime;
+
   Timer? _timer;
   int elapsedTimeInSeconds = 0;
   var phoneNumber = '';
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String hours =
-        duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
-    String minutes = twoDigits(duration.inMinutes.remainder(60));
-    String seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$hours$minutes:$seconds';
-  }
 
   IconData getIcons(PhoneStateStatus status) {
     return switch (status) {
@@ -88,7 +82,9 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     super.initState();
 
     candiDateCubit.getCandidateDetailData(
-        jdid: widget.jdId, candidateid: widget.candiDateId, remarkList: RemarksCubit);
+        jdid: widget.jdId,
+        candidateid: widget.candiDateId,
+        remarkList: RemarksCubit);
     callDetailCubit.getCallDataList(jdId: widget.jdId, mobNo: widget.mobNo);
     _requestPermissions();
     _listenForCallEvents();
@@ -140,7 +136,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
 
     try {
       await Future.delayed(
-          Duration(milliseconds: 500)); // ✅ Ensures recording finishes
+          Duration(milliseconds: 500));
       String? filePath = await _recorder.stop();
 
       if (filePath != null) {
@@ -166,73 +162,98 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   }
 
   void _listenForCallEvents() {
+
     _phoneStateSubscription =
         PhoneState.stream.listen((PhoneState state) async {
-      if (state.status == PhoneStateStatus.CALL_STARTED && !_isRecording) {
-        _isRecording = true;
-        await startRecording();
+      if (state.status == PhoneStateStatus.CALL_STARTED) {
+        log("-------------------CallStarted-------------");
+        callStartTime = DateTime.now();
         setState(() {});
-      } else if (state.status == PhoneStateStatus.CALL_ENDED && _isRecording) {
-        _isRecording = false;
-        await _stopRecording();
+      } else if (state.status == PhoneStateStatus.CALL_ENDED) {
+        log("-------------------CallEnded-------------");
+        callEndTime = DateTime.now();
+        _saveAndSendCallLog();
         setState(() {});
       }
     });
   }
 
-  Future<void> playRecord() async {
-    if (_filePath == null || _filePath!.isEmpty) {
-      Utils.fluttertoast("❌ No recording found to play");
-      return;
-    }
+  Future<void> _saveAndSendCallLog() async {
+    if (callStartTime != null && callEndTime != null) {
+      Duration callDuration = callEndTime!.difference(callStartTime!);
 
-    final file = File(_filePath!);
+      String formattedStartTime = candiDateCubit.formatTime(callStartTime!);
+      String formattedEndTime = candiDateCubit.formatTime(callEndTime!);
+      String formattedDuration = candiDateCubit.formatDuration(callDuration);
 
-    // 🔹 Step 1: Check if the file exists
-    if (!await file.exists()) {
-      Utils.fluttertoast("❌ File does not exist at path: $_filePath");
-      return;
-    }
+      Map<String, dynamic> callLog = {
+        "call_start_time": formattedStartTime,
+        "call_end_time": formattedEndTime,
+        "call_duration": formattedDuration
+      };
 
-    // 🔹 Step 2: Check if file has valid size
-    final fileSize = await file.length();
-    if (fileSize == 0) {
-      Utils.fluttertoast("❌ The file is empty, it might be corrupted.");
-      return;
-    }
-
-    try {
-      // 🔹 Step 3: Check if audio format is supported
-      if (!_filePath!.endsWith('.wav') && !_filePath!.endsWith('.mp3')) {
-        Utils.fluttertoast(
-            "❌ Unsupported file format! Only .wav and .mp3 are supported.");
-        return;
-      }
-
-      Utils.fluttertoast("✅ File is valid. Size: $fileSize bytes");
-
-      // // 🔹 Step 4: Stop any currently playing audio
-      // await audioPlayer.stop();
-
-      // 🔹 Step 5: Try setting the file path for playback
-      await audioPlayer.setFilePath(_filePath!);
-
-      // 🔹 Step 6: Play the audio
-      Utils.fluttertoast("▶️ Playing recording...");
-      await audioPlayer.play();
-    } catch (e) {
-      Utils.fluttertoast("❌ Error playing the recording: $e");
+      RemarksCubit.CallPostRecore(context,
+          cubit: RemarksCubit,
+          jdId: candiDateCubit.state.detail!.jdId.toString(),
+          mobNo: candiDateCubit.state.detail!.contactNo.toString(),
+          candidateid: widget.candiDateId, RecordCallBack: (success) {
+        if (success) {
+          candiDateCubit.getCandidateDetailData(
+              jdid: widget.jdId,
+              candidateid: widget.candiDateId,
+              remarkList: RemarksCubit);
+        }
+      }, callLog: callLog);
     }
   }
 
-  Future<void> makePhoneCall(String phone) async {
-    var url = 'tel:$phone';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      Utils.fluttertoast("❌ Could not launch dialer");
-    }
-  }
+
+
+  // Future<void> playRecord() async {
+  //   if (_filePath == null || _filePath!.isEmpty) {
+  //     Utils.fluttertoast("❌ No recording found to play");
+  //     return;
+  //   }
+  //
+  //   final file = File(_filePath!);
+  //
+  //   // 🔹 Step 1: Check if the file exists
+  //   if (!await file.exists()) {
+  //     Utils.fluttertoast("❌ File does not exist at path: $_filePath");
+  //     return;
+  //   }
+  //
+  //   // 🔹 Step 2: Check if file has valid size
+  //   final fileSize = await file.length();
+  //   if (fileSize == 0) {
+  //     Utils.fluttertoast("❌ The file is empty, it might be corrupted.");
+  //     return;
+  //   }
+  //
+  //   try {
+  //     // 🔹 Step 3: Check if audio format is supported
+  //     if (!_filePath!.endsWith('.wav') && !_filePath!.endsWith('.mp3')) {
+  //       Utils.fluttertoast(
+  //           "❌ Unsupported file format! Only .wav and .mp3 are supported.");
+  //       return;
+  //     }
+  //
+  //     Utils.fluttertoast("✅ File is valid. Size: $fileSize bytes");
+  //
+  //     // // 🔹 Step 4: Stop any currently playing audio
+  //     // await audioPlayer.stop();
+  //
+  //     // 🔹 Step 5: Try setting the file path for playback
+  //     await audioPlayer.setFilePath(_filePath!);
+  //
+  //     // 🔹 Step 6: Play the audio
+  //     Utils.fluttertoast("▶️ Playing recording...");
+  //     await audioPlayer.play();
+  //   } catch (e) {
+  //     Utils.fluttertoast("❌ Error playing the recording: $e");
+  //   }
+  // }
+
 
   // Future<void> playRecord() async {
   //   if (_filePath != null) {
@@ -284,7 +305,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                         retry: () {
                           candiDateCubit.getCandidateDetailData(
                               jdid: widget.jdId,
-                              candidateid: widget.candiDateId,remarkList: RemarksCubit);
+                              candidateid: widget.candiDateId,
+                              remarkList: RemarksCubit);
                         },
                         messgae: networkconnectionlost.error.toString());
 
@@ -386,12 +408,21 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        RemarksCubit.getReMarkList(context, cubit: RemarksCubit,jdId: detail!.jdId.toString(),mobNo: detail!.contactNo.toString(),candidateid: widget.candiDateId,RemarkCallBack: (success) {
-                         if(success) {
-                           candiDateCubit.getCandidateDetailData(
-                               jdid: widget.jdId, candidateid: widget.candiDateId, remarkList: RemarksCubit);
-                         }
-                        },);
+                        RemarksCubit.getReMarkList(
+                          context,
+                          cubit: RemarksCubit,
+                          jdId: detail!.jdId.toString(),
+                          mobNo: detail!.contactNo.toString(),
+                          candidateid: widget.candiDateId,
+                          RemarkCallBack: (success) {
+                            if (success) {
+                              candiDateCubit.getCandidateDetailData(
+                                  jdid: widget.jdId,
+                                  candidateid: widget.candiDateId,
+                                  remarkList: RemarksCubit);
+                            }
+                          },
+                        );
                       },
                       child: reausabletext("Edit",
                           fontfamily: FontFamily.interSemiBold,
@@ -413,45 +444,42 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                 ),
                 const Divider(),
 
-
-               // Call Recording functionality
-                StreamBuilder(
-                  stream: PhoneState.stream,
-                  builder: (context, snapshot) {
-                    PhoneState? status = snapshot.data;
-                    if (status == null) {
-                      return const Text(
-                        'Phone State not available',
-                      );
-                    }
-                    return Column(
-                      children: [
-                        const Text(
-                          'Status of call',
-                          style: TextStyle(fontSize: 24),
-                        ),
-                        if (status.status == PhoneStateStatus.CALL_INCOMING ||
-                            status.status == PhoneStateStatus.CALL_STARTED)
-                          Text(
-                            'Number: ${status.number}',
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                        if (status.duration != null)
-                          Text(
-                            'Duration of call: ${_formatDuration(status.duration!)}',
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                        Icon(
-                          getIcons(status.status),
-                          color: getColor(status.status),
-                          size: 80,
-                        )
-                      ],
-                    );
-                  },
-                ),
-
-
+                // Call Recording functionality
+                //  StreamBuilder(
+                //    stream: PhoneState.stream,
+                //    builder: (context, snapshot) {
+                //      PhoneState? status = snapshot.data;
+                //      if (status == null) {
+                //        return const Text(
+                //          'Phone State not available',
+                //        );
+                //      }
+                //      return Column(
+                //        children: [
+                //          const Text(
+                //            'Status of call',
+                //            style: TextStyle(fontSize: 24),
+                //          ),
+                //          if (status.status == PhoneStateStatus.CALL_INCOMING ||
+                //              status.status == PhoneStateStatus.CALL_STARTED)
+                //            Text(
+                //              'Number: ${status.number}',
+                //              style: const TextStyle(fontSize: 24),
+                //            ),
+                //          if (status.duration != null)
+                //            Text(
+                //              'Duration of call: ${_formatDuration(status.duration!)}',
+                //              style: const TextStyle(fontSize: 24),
+                //            ),
+                //          Icon(
+                //            getIcons(status.status),
+                //            color: getColor(status.status),
+                //            size: 80,
+                //          )
+                //        ],
+                //      );
+                //    },
+                //  ),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -460,8 +488,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       icon: Icons.call,
                       color: Colors.green,
                       onTap: () async {
-                        // startRecording();
-                        makePhoneCall(detail!.contactNo.toString());
+                        candiDateCubit.makePhoneCall(detail!.contactNo.toString());
                       },
                     ),
                     buildIconButton(
