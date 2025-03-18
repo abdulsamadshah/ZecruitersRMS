@@ -111,6 +111,10 @@ class DialogBox {
                               SizedBox(
                                 height: 20.h,
                               ),
+                              reausabletext("Select Remark"),
+                              SizedBox(
+                                height: 5.h,
+                              ),
                               CustomDropdown(
                                 items: candiDateCubit.state.remarkData ?? [],
                                 hintText: "Select Client Name",
@@ -139,18 +143,23 @@ class DialogBox {
                               SizedBox(
                                 height: 15.h,
                               ),
+
+                              reausabletext("Enter Comment"),
+                              SizedBox(
+                                height: 5.h,
+                              ),
                               TextFormField(
                                 controller: candiDateCubit.comments,
                                 keyboardType: TextInputType.text,
-                                validator: (value) {
-                                  if (value!.isEmpty ||
-                                      value == null ||
-                                      value == "") {
-                                    return "Comment can't be empty";
-                                  } else {
-                                    return null;
-                                  }
-                                },
+                                // validator: (value) {
+                                //   if (value!.isEmpty ||
+                                //       value == null ||
+                                //       value == "") {
+                                //     return "Comment can't be empty";
+                                //   } else {
+                                //     return null;
+                                //   }
+                                // },
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),

@@ -413,7 +413,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                 ),
                 const Divider(),
 
-                /*
+
                // Call Recording functionality
                 StreamBuilder(
                   stream: PhoneState.stream,
@@ -451,7 +451,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                   },
                 ),
 
-                 */
+
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
