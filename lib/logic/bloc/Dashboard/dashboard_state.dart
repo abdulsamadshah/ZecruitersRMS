@@ -5,26 +5,26 @@ class DashboardState {
   int selectedIndex;
   DashData? detail;
   final String? error;
-  DateTime selectedDate;
+  // DateTime? selectedDate;
 
   DashboardState({
     this.selectedIndex = 0,
     this.error,
     this.detail,
-    DateTime? selectedDate, // Allow null value
-  }) : selectedDate = selectedDate ?? DateTime.now(); // ✅ Ensures default value
+    // this.selectedDate,
+  });
 
   DashboardState copyWith({
     int? selectedIndex,
     DashData? detail,
     String? error,
-    DateTime? selectedDate, // ✅ Change type from String? to DateTime?
+    // DateTime? selectedDate,
   }) {
     return DashboardState(
       selectedIndex: selectedIndex ?? this.selectedIndex,
       error: error ?? this.error,
       detail: detail ?? this.detail,
-      selectedDate: selectedDate ?? this.selectedDate, // ✅ No type mismatch
+      // selectedDate: selectedDate ?? this.selectedDate,
     );
   }
 }

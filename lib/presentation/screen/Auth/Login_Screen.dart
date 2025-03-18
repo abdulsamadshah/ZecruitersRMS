@@ -114,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             title('Company Id'),
                             textfield(
                               context,
+
                               hintname: "Enter Company Id",
                               prefixicon: Icons.cabin,
                               inputFormatters: [
@@ -123,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 loginBloc.add(companyIdEvent(value.toString()));
 
                               },
+
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "Company Id is required";

@@ -29,11 +29,12 @@ class _HomeState extends State<Home> {
   // firebaseNotificationServices notificationServices =
   // firebaseNotificationServices();
   final dashCubit = DashboardCubit();
+  var selectedDate = DateTime.now();
   @override
   void initState() {
     super.initState();
 
-    dashCubit.getDashBoardData();
+    dashCubit.getDashBoardData(selectedDate: selectedDate);
     // checkNotificationPermission();
     // notificationServices.setupInteractMessage(context);
     // notificationServices.getDiviceToken();
@@ -42,6 +43,23 @@ class _HomeState extends State<Home> {
   Future<void> checkNotificationPermission() async {
     // await notificationServices.askPermission();
   }
+
+  Future<void> pickDate(BuildContext context,
+      {required DashboardCubit cubit}) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null) {
+      selectedDate = pickedDate;
+      cubit.getDashBoardData(selectedDate: pickedDate);
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,7 +157,6 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-
               Padding(
                 padding: EdgeInsets.only(
                   top: 110.h,
@@ -150,8 +167,8 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(30.r),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 15.w, vertical: 15.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -160,18 +177,17 @@ class _HomeState extends State<Home> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              state.selectedDate != null
-                                  ? DateFormat('yyyy-MM-dd')
-                                      .format(state.selectedDate)
-                                  : "Select Date",
+                              DateFormat('yyyy-MM-dd').format(
+                                selectedDate,
+                              ),
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             IconButton(
                               icon: Icon(Icons.calendar_today,
                                   color: Colors.blue),
-                              onPressed: () => dashCubit.pickDate(context,
-                                  cubit: dashCubit),
+                              onPressed: () =>
+                                  pickDate(context, cubit: dashCubit),
                             ),
                           ],
                         ),
@@ -179,17 +195,17 @@ class _HomeState extends State<Home> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                             OrderWidget(
+                            OrderWidget(
                               color: Color.fromRGBO(5, 0, 255, 0.9),
                               image: AssetImage('asset/images/docc1.png'),
                               percent: '0',
                               subTitle: 'Total CALL',
-                              title:state.detail?.tOTALCALL ?? "0",
+                              title: state.detail?.tOTALCALL ?? "0",
                             ),
                             SizedBox(
                               width: 15.w,
                             ),
-                             OrderWidget(
+                            OrderWidget(
                               color: Color.fromRGBO(0, 184, 212, 1),
                               image: AssetImage('asset/images/doc4.png'),
                               percent: '0',

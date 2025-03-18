@@ -19,21 +19,23 @@ class DashboardCubit extends Cubit<DashboardState> {
     emit(state.copyWith(selectedIndex: index));
   }
 
-  void selectedDate(date) {
-    emit(state.copyWith(selectedDate: date));
-  }
+  //  selectedDate(date) {
+  //   print("----------SelectedDateis:${date}");
+  //   emit(state.copyWith(selectedDate: date));
+  // }
 
   Future<void> getDashBoardData({DateTime? selectedDate}) async {
     try {
       emit(LoadingState());
+
       var data = {
         'companyid':
             Global.storageServices.get(SecureSharedPreference.companyId),
         'userid': Global.storageServices.getProfileData().loingId.toString(),
         'access_rights':
             Global.storageServices.getProfileData().accessRights.toString(),
-        'date': DateFormat('yyyy-MM-dd').format(selectedDate ?? state.selectedDate),
-
+        'date': DateFormat('yyyy-MM-dd')
+            .format(DateTime.parse(selectedDate.toString())),
       };
 
       var result = await DashBoardRepo.getDashboardData(param: data);
@@ -45,21 +47,6 @@ class DashboardCubit extends Cubit<DashboardState> {
       }
     } catch (e) {
       Utils.fluttertoast(e.toString());
-    }
-  }
-
-  Future<void> pickDate(BuildContext context,
-      {required DashboardCubit cubit}) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-
-    if (pickedDate != null) {
-      cubit.selectedDate(pickedDate);
-      cubit.getDashBoardData(selectedDate: pickedDate);
     }
   }
 }
