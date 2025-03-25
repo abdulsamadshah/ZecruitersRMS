@@ -45,13 +45,10 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   final CandiDateCubit RemarksCubit = CandiDateCubit();
   final CandiDateCubit candiDateCubit = CandiDateCubit();
   final CandiDateCubit callDetailCubit = CandiDateCubit();
-  DateTime? callStartTime;
-  DateTime? callEndTime;
+
   StreamSubscription<PhoneState>? _phoneStateSubscription;
   final AudioPlayer audioPlayer = AudioPlayer();
-  final AudioRecorder _recorder = AudioRecorder();
-  String? _filePath;
-  bool _isRecording = false;
+
 
   bool granted = false;
   var isCallOngoing = false;
@@ -92,9 +89,9 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
 
   @override
   void onClose() {
-    _timer?.cancel();
-    _phoneStateSubscription?.cancel();
-    audioPlayer.dispose();
+    // _timer?.cancel();
+    // _phoneStateSubscription?.cancel();
+    // audioPlayer.dispose();
   }
 
   Future<void> _requestPermissions() async {
@@ -105,92 +102,50 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     ].request();
   }
 
-  Future<void> startRecording() async {
-    final Directory appDocumentDirectory =
-        await getApplicationDocumentsDirectory();
-    String filePath = p.join(appDocumentDirectory.path, "recording.wav");
 
-    if (await _recorder.hasPermission()) {
-      Utils.fluttertoast("🎤 Starting recording...");
-      await _recorder.start(
-        RecordConfig(
-          encoder: AudioEncoder.wav,
-          // sampleRate: 16000,
-          // bitRate: 128000,
-          noiseSuppress: true, // ✅ Helps in call recording
-          // androidOutputFormat: AndroidAudioSource.voiceCommunication, // ✅ Ensures capturing call audio
-        ),
-        path: filePath,
-      );
-      setState(() {
-        _isRecording = true;
-        _filePath = filePath;
-      });
-    } else {
-      Utils.fluttertoast("❌ No recording permission!");
-    }
-  }
 
-  Future<void> _stopRecording() async {
-    if (!_isRecording) return;
-
-    try {
-      await Future.delayed(
-          Duration(milliseconds: 500));
-      String? filePath = await _recorder.stop();
-
-      if (filePath != null) {
-        final fileSize = await File(filePath).length();
-
-        setState(() {
-          _isRecording = false;
-          _filePath = filePath;
-        });
-
-        if (fileSize > 0) {
-          Utils.fluttertoast(
-              "✅ Recording saved at: ${filePath} (Size: $fileSize bytes)");
-        } else {
-          Utils.fluttertoast("❌ Recording file is empty! Try another source.");
-        }
-      } else {
-        Utils.fluttertoast("❌ Error stopping the recording");
-      }
-    } catch (e) {
-      Utils.fluttertoast("❌ Error stopping recording: $e");
-    }
-  }
 
   void _listenForCallEvents() {
 
     _phoneStateSubscription =
         PhoneState.stream.listen((PhoneState state) async {
       if (state.status == PhoneStateStatus.CALL_STARTED) {
+        // formatDuration(status.duration!)
+        // state.duration
+        RemarksCubit.callDuration(state.duration);
         log("-------------------CallStarted-------------");
-        callStartTime = DateTime.now();
-        setState(() {});
+        RemarksCubit.callStartTime(DateTime.now());
+        // setState(() {});
       } else if (state.status == PhoneStateStatus.CALL_ENDED) {
+
         log("-------------------CallEnded-------------");
-        callEndTime = DateTime.now();
+        RemarksCubit.callEndTime(DateTime.now());
+
         _saveAndSendCallLog();
-        setState(() {});
+
       }
     });
   }
 
   Future<void> _saveAndSendCallLog() async {
-    if (callStartTime != null && callEndTime != null) {
-      Duration callDuration = callEndTime!.difference(callStartTime!);
+    if (RemarksCubit.state.call_start_time != null && RemarksCubit.state.call_end_time != null) {
+      // Duration callDuration = RemarksCubit.state.call_end_time!.difference(callStartTime!);
 
-      String formattedStartTime = candiDateCubit.formatTime(callStartTime!);
-      String formattedEndTime = candiDateCubit.formatTime(callEndTime!);
-      String formattedDuration = candiDateCubit.formatDuration(callDuration);
+      // String formattedStartTime = candiDateCubit.formatTime(callStartTime!);
+      // String formattedEndTime = candiDateCubit.formatTime(callEndTime!);
+      // String formattedDuration = candiDateCubit.formatDuration(callDuration);
 
-      Map<String, dynamic> callLog = {
-        "call_start_time": formattedStartTime,
-        "call_end_time": formattedEndTime,
-        "call_duration": formattedDuration
-      };
+      // String formattedDuration = formatDuration(callDuration);
+      //
+      // Map<String, dynamic> callLog = {
+      //   "call_start_time": candiDateCubit.formatTime(callStartTime!), // Format as needed
+      //   "call_end_time": candiDateCubit.formatTime(callEndTime!),     // Format as needed
+      //   "call_duration": formattedDuration // Example: "04:31:30"
+      // };
+
+      // print("📡 Sending Data to API: $callLog");
+
+      // print("Call Log: $callLog");  // Now it correctly shows HH:mm:ss format
 
       RemarksCubit.CallPostRecore(context,
           cubit: RemarksCubit,
@@ -198,172 +153,96 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
           mobNo: candiDateCubit.state.detail!.contactNo.toString(),
           candidateid: widget.candiDateId, RecordCallBack: (success) {
         if (success) {
-          candiDateCubit.getCandidateDetailData(
-              jdid: widget.jdId,
-              candidateid: widget.candiDateId,
-              remarkList: RemarksCubit);
+
+          callDetailCubit.getCallDataList(jdId: widget.jdId, mobNo: widget.mobNo);
+
         }
-      }, callLog: callLog);
+      });
     }
   }
 
 
-
-  // Future<void> playRecord() async {
-  //   if (_filePath == null || _filePath!.isEmpty) {
-  //     Utils.fluttertoast("❌ No recording found to play");
-  //     return;
-  //   }
-  //
-  //   final file = File(_filePath!);
-  //
-  //   // 🔹 Step 1: Check if the file exists
-  //   if (!await file.exists()) {
-  //     Utils.fluttertoast("❌ File does not exist at path: $_filePath");
-  //     return;
-  //   }
-  //
-  //   // 🔹 Step 2: Check if file has valid size
-  //   final fileSize = await file.length();
-  //   if (fileSize == 0) {
-  //     Utils.fluttertoast("❌ The file is empty, it might be corrupted.");
-  //     return;
-  //   }
-  //
-  //   try {
-  //     // 🔹 Step 3: Check if audio format is supported
-  //     if (!_filePath!.endsWith('.wav') && !_filePath!.endsWith('.mp3')) {
-  //       Utils.fluttertoast(
-  //           "❌ Unsupported file format! Only .wav and .mp3 are supported.");
-  //       return;
-  //     }
-  //
-  //     Utils.fluttertoast("✅ File is valid. Size: $fileSize bytes");
-  //
-  //     // // 🔹 Step 4: Stop any currently playing audio
-  //     // await audioPlayer.stop();
-  //
-  //     // 🔹 Step 5: Try setting the file path for playback
-  //     await audioPlayer.setFilePath(_filePath!);
-  //
-  //     // 🔹 Step 6: Play the audio
-  //     Utils.fluttertoast("▶️ Playing recording...");
-  //     await audioPlayer.play();
-  //   } catch (e) {
-  //     Utils.fluttertoast("❌ Error playing the recording: $e");
-  //   }
-  // }
-
-
-  // Future<void> playRecord() async {
-  //   if (_filePath != null) {
-  //     try {
-  //       final file = File(_filePath!);
-  //       print("Recording file path: $_filePath");
-  //
-  //       if (await file.exists()) {
-  //         final fileSize = await file.length();
-  //         if (fileSize > 0) {
-  //           Utils.fluttertoast("File exists and has a valid size: $fileSize bytes");
-  //
-  //           await audioPlayer.stop();
-  //           Utils.fluttertoast("Start Playing...");
-  //
-  //           await audioPlayer.setFilePath(_filePath!);
-  //           await audioPlayer.play();
-  //         } else {
-  //           Utils.fluttertoast("❌ The file is empty: $fileSize bytes");
-  //         }
-  //       } else {
-  //         Utils.fluttertoast("❌ File does not exist at path: $_filePath");
-  //       }
-  //     } catch (e) {
-  //       Utils.fluttertoast("❌ Error playing the recording: $e");
-  //     }
-  //   } else {
-  //     Utils.fluttertoast("❌ No recording found to play");
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: mainAppBar(context, title: widget.candiDateId, type: "basic"),
-        body: ListView(
-          children: [
-            BlocConsumer<CandiDateCubit, CandiDateState>(
-              bloc: candiDateCubit,
-              listener: (context, state) {},
-              builder: (context, state) {
-                switch (state.runtimeType) {
-                  case LoadingState:
-                    return CandiDateDetailUi(isLoading: true);
+    return BlocProvider(
+      child: Scaffold(
+          appBar: mainAppBar(context, title: widget.candiDateId, type: "basic"),
+          body: ListView(
+            children: [
+              BlocConsumer<CandiDateCubit, CandiDateState>(
+                bloc: candiDateCubit,
+                listener: (context, state) {},
+                builder: (context, state) {
+                  switch (state.runtimeType) {
+                    case LoadingState:
+                      return CandiDateDetailUi(isLoading: true);
 
-                  case LoadingError:
-                    final networkconnectionlost = state as LoadingError;
-                    return LostinternetConnection(
-                        retry: () {
-                          candiDateCubit.getCandidateDetailData(
-                              jdid: widget.jdId,
-                              candidateid: widget.candiDateId,
-                              remarkList: RemarksCubit);
-                        },
-                        messgae: networkconnectionlost.error.toString());
+                    case LoadingError:
+                      final networkconnectionlost = state as LoadingError;
+                      return LostinternetConnection(
+                          retry: () {
+                            candiDateCubit.getCandidateDetailData(
+                                jdid: widget.jdId,
+                                candidateid: widget.candiDateId,
+                                remarkList: RemarksCubit);
+                          },
+                          messgae: networkconnectionlost.error.toString());
 
-                  case CandiDateDetailLoadingSuccess:
-                    final list = state as CandiDateDetailLoadingSuccess;
-                    if (list.detail == null) {
-                      return Align(
-                          alignment: Alignment.center,
-                          child: reausabletext("No Data Found"));
-                    } else {
-                      return CandiDateDetailUi(detail: list.detail);
-                    }
+                    case CandiDateDetailLoadingSuccess:
+                      final list = state as CandiDateDetailLoadingSuccess;
+                      if (list.detail == null) {
+                        return Align(
+                            alignment: Alignment.center,
+                            child: reausabletext("No Data Found"));
+                      } else {
+                        return CandiDateDetailUi(detail: list.detail);
+                      }
 
-                  default:
-                    return const SizedBox();
-                }
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 15.w),
-              child: reausabletext("Call Detail",
-                  fontsize: 21, fontweight: FontWeight.bold),
-            ),
-            BlocConsumer<CandiDateCubit, CandiDateState>(
-              bloc: callDetailCubit,
-              listener: (context, state) {},
-              builder: (context, state) {
-                switch (state.runtimeType) {
-                  case LoadingState:
-                    return CallListUi(isLoading: true);
+                    default:
+                      return const SizedBox();
+                  }
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 15.w),
+                child: reausabletext("Call Detail",
+                    fontsize: 21, fontweight: FontWeight.bold),
+              ),
+              BlocConsumer<CandiDateCubit, CandiDateState>(
+                bloc: callDetailCubit,
+                listener: (context, state) {},
+                builder: (context, state) {
+                  switch (state.runtimeType) {
+                    case LoadingState:
+                      return CallListUi(isLoading: true);
 
-                  case LoadingError:
-                    final networkconnectionlost = state as LoadingError;
-                    return LostinternetConnection(
-                        retry: () {
-                          callDetailCubit.getCallDataList(
-                              jdId: widget.jdId, mobNo: widget.mobNo);
-                        },
-                        messgae: networkconnectionlost.error.toString());
+                    case LoadingError:
+                      final networkconnectionlost = state as LoadingError;
+                      return LostinternetConnection(
+                          retry: () {
+                            callDetailCubit.getCallDataList(
+                                jdId: widget.jdId, mobNo: widget.mobNo);
+                          },
+                          messgae: networkconnectionlost.error.toString());
 
-                  case CallDetailLoadingSuccess:
-                    final list = state as CallDetailLoadingSuccess;
-                    if (list.callData!.isEmpty) {
-                      return Align(
-                          alignment: Alignment.center,
-                          child: reausabletext("No Call Data Found"));
-                    } else {
-                      return CallListUi(data: list.callData);
-                    }
+                    case CallDetailLoadingSuccess:
+                      final list = state as CallDetailLoadingSuccess;
+                      if (list.callData!.isEmpty) {
+                        return Align(
+                            alignment: Alignment.center,
+                            child: reausabletext("No Call Data Found"));
+                      } else {
+                        return CallListUi(data: list.callData);
+                      }
 
-                  default:
-                    return const SizedBox();
-                }
-              },
-            ),
-          ],
-        ));
+                    default:
+                      return const SizedBox();
+                  }
+                },
+              ),
+            ],
+          )),
+      create: (context) => RemarksCubit,);
   }
 
   Widget CandiDateDetailUi({CandiDateDetail? detail, bool isLoading = false}) {
@@ -495,37 +374,31 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       icon: Icons.email,
                       color: Colors.blue,
                       onTap: () async {
-                        _stopRecording();
-                        // String url = "mailto:${detail?.emailId ?? ""}";
-                        // if (await canLaunch(url)) {
-                        //   await launch(url);
-                        // } else {
-                        //   throw 'Could not send the email.';
-                        // }
+
+                        String url = "mailto:${detail?.emailId ?? ""}";
+                        if (await canLaunch(url)) {
+                          await launch(url);
+                        } else {
+                          throw 'Could not send the email.';
+                        }
                       },
                     ),
                     buildIconButton(
                       icon: FontAwesomeIcons.whatsapp,
                       color: Colors.teal,
                       onTap: () async {
-                        startRecording();
-                        // String url = "https://wa.me/${detail?.contactNo ?? ""}";
-                        // if (await canLaunch(url)) {
-                        //   await launch(url);
-                        // } else {
-                        //   throw 'Could not open WhatsApp.';
-                        // }
+
+                        String url = "https://wa.me/${detail?.contactNo ?? ""}";
+                        if (await canLaunch(url)) {
+                          await launch(url);
+                        } else {
+                          throw 'Could not open WhatsApp.';
+                        }
                       },
                     ),
                   ],
                 ),
-                // ElevatedButton(
-                //   onPressed: () {
-                //     playRecord();
-                //   }, // Play button only if file exists
-                //   child: const Text('Play Recording'),
-                // ),
-                // _buildActionButtons(context, detail: detail),
+
               ],
             ),
           ),

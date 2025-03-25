@@ -4,9 +4,11 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/constant/SecureSharedPref.dart';
 import 'package:zecruiters_rms/core/constant/global.dart';
+import 'package:zecruiters_rms/data/Services/CallHelper.dart';
 import 'package:zecruiters_rms/data/models/CallDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateDetailRes.dart';
 import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
@@ -30,6 +32,18 @@ class CandiDateCubit extends Cubit<CandiDateState> {
   List<CandiDateData> canDiDateModel = [];
   List<CandiDateData> allcanDiDate = [];
   List<CandiDateData> filteredCandiDate = [];
+
+  callStartTime(callStartTime){
+    emit(state.copyWith(call_start_time: callStartTime));
+  }
+
+  callEndTime(callEndTime){
+    emit(state.copyWith(call_end_time: callEndTime));
+  }
+
+  callDuration(call_duration){
+    emit(state.copyWith(call_duration: call_duration));
+  }
 
   void searchCandiDate(String query) {
     query = query.trim();
@@ -259,7 +273,8 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       candidateid,
       required CandiDateCubit cubit,
       void Function(bool)? RecordCallBack,
-      required dynamic callLog}) async {
+      // required dynamic callLog
+      }) async {
     try {
       Loading().showloading(context);
 
@@ -273,9 +288,9 @@ class CandiDateCubit extends Cubit<CandiDateState> {
         'jdid': jdId,
         'mobilno': mobNo,
         'candidateid': candidateid,
-        'call_start_time': callLog['call_start_time'],
-        'call_end_time': callLog['call_end_time'],
-        'call_duration': callLog['call_duration'],
+        'call_start_time': cubit.state.call_start_time,
+        'call_end_time': cubit.state.call_end_time,
+        'call_duration':cubit.state.call_duration,
       });
 
       data.files.add(MapEntry(
@@ -315,13 +330,15 @@ class CandiDateCubit extends Cubit<CandiDateState> {
 
 
   Future<void> makePhoneCall(String phone) async {
-    var url = 'tel:7387454586';
-    // var url = 'tel:$phone';
-    if (await canLaunch(url)) {
-      await launch(url);
+
+    var status = await Permission.phone.request();
+    if (status.isGranted) {
+      CallHelper.makeDirectCall("7387454586");
     } else {
-      Utils.fluttertoast("❌ Could not launch dialer");
+      throw 'Phone call permission not granted';
     }
+
+
   }
 
   String formatTime(DateTime time) {
@@ -329,10 +346,15 @@ class CandiDateCubit extends Cubit<CandiDateState> {
         "${time.minute.toString().padLeft(2, '0')}:"
         "${time.second.toString().padLeft(2, '0')}";
   }
-
   String formatDuration(Duration duration) {
-    return "${duration.inHours.toString().padLeft(2, '0')}:"
-        "${(duration.inMinutes % 60).toString().padLeft(2, '0')}:"
-        "${(duration.inSeconds % 60).toString().padLeft(2, '0')}";
+    int hours = duration.inHours;
+    int minutes = duration.inMinutes.remainder(60);
+    int seconds = duration.inSeconds.remainder(60);
+
+    return "${hours.toString().padLeft(2, '0')}:"
+        "${minutes.toString().padLeft(2, '0')}:"
+        "${seconds.toString().padLeft(2, '0')}";
   }
+
+
 }

@@ -4,22 +4,28 @@ part of 'candi_date_cubit.dart';
 class CandiDateState {
   final List<CandiDateData>? listData;
   final List<CallDetail>? callData;
+  var call_start_time;
+  var call_end_time;
+  var call_duration;
 
   CandiDateDetail? detail;
   final String? error;
   final List<RemakListData>? remarkData;
   dynamic SelectedremarkData;
-  CandiDateState({this.listData, this.error, this.detail,this.callData,this.remarkData,this.SelectedremarkData});
+  CandiDateState({this.listData, this.error, this.detail,this.callData,this.remarkData,this.SelectedremarkData,this.call_duration,this.call_end_time,this.call_start_time});
 
   CandiDateState copyWith(
-      {List<CandiDateData>? listData, String? error, CandiDateDetail? detail,List<CallDetail>? callData,List<RemakListData>? remarkData,dynamic SelectedremarkData}) {
+      {List<CandiDateData>? listData, String? error, CandiDateDetail? detail,List<CallDetail>? callData,List<RemakListData>? remarkData,dynamic SelectedremarkData,var call_start_time,call_end_time,call_duration}) {
     return CandiDateState(
         listData: listData ?? this.listData,
         error: error ?? this.error,
         detail: detail ?? this.detail,
     callData: callData ?? this.callData,
       remarkData: remarkData ?? this.remarkData,
-      SelectedremarkData: SelectedremarkData ?? this.SelectedremarkData
+      SelectedremarkData: SelectedremarkData ?? this.SelectedremarkData,
+      call_duration: call_duration ?? this.call_duration,
+      call_end_time: call_end_time ?? this.call_end_time,
+      call_start_time: call_start_time ?? this.call_start_time
     );
   }
 }

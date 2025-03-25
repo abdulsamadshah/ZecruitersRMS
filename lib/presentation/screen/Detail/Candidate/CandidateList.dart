@@ -274,12 +274,8 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                             icon: Icons.call,
                             color: Colors.green,
                             onTap: () async {
-                              String url = "tel:${user?.contactNo ?? ""}";
-                              if (await canLaunch(url)) {
-                                await launch(url);
-                              } else {
-                                throw 'Could not make the phone call.';
-                              }
+                              candiDateCubit.makePhoneCall(user?.contactNo ?? "");
+
                             },
                           ),
                           _buildIconButton(
