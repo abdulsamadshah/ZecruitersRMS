@@ -273,7 +273,7 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       candidateid,
       required CandiDateCubit cubit,
       void Function(bool)? RecordCallBack,
-      // required dynamic callLog
+      required dynamic callLog
       }) async {
     try {
       Loading().showloading(context);
@@ -288,9 +288,9 @@ class CandiDateCubit extends Cubit<CandiDateState> {
         'jdid': jdId,
         'mobilno': mobNo,
         'candidateid': candidateid,
-        'call_start_time': cubit.state.call_start_time,
-        'call_end_time': cubit.state.call_end_time,
-        'call_duration':cubit.state.call_duration,
+        'call_start_time': callLog['call_start_time'],
+        'call_end_time': callLog['call_end_time'],
+        'call_duration': callLog['call_duration'],
       });
 
       data.files.add(MapEntry(
@@ -351,10 +351,9 @@ class CandiDateCubit extends Cubit<CandiDateState> {
     int minutes = duration.inMinutes.remainder(60);
     int seconds = duration.inSeconds.remainder(60);
 
-    return "${hours.toString().padLeft(2, '0')}:"
-        "${minutes.toString().padLeft(2, '0')}:"
-        "${seconds.toString().padLeft(2, '0')}";
+    return "$hours:$minutes:${seconds.toString().padLeft(2, '0')}";
   }
+
 
 
 }

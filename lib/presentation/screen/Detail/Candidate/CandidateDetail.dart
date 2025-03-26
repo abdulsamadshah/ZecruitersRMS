@@ -52,7 +52,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
 
   bool granted = false;
   var isCallOngoing = false;
-
+var callStartTime;
+var callEndtTime;
   Timer? _timer;
   int elapsedTimeInSeconds = 0;
   var phoneNumber = '';
@@ -89,9 +90,9 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
 
   @override
   void onClose() {
-    // _timer?.cancel();
-    // _phoneStateSubscription?.cancel();
-    // audioPlayer.dispose();
+    _timer?.cancel();
+    _phoneStateSubscription?.cancel();
+    audioPlayer.dispose();
   }
 
   Future<void> _requestPermissions() async {
@@ -105,56 +106,68 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
 
 
 
+  bool _isCallLogSaved = false; // Add this flag
+
   void _listenForCallEvents() {
+    _phoneStateSubscription?.cancel();
+    _phoneStateSubscription = PhoneState.stream.listen((PhoneState state) async {
 
-    _phoneStateSubscription =
-        PhoneState.stream.listen((PhoneState state) async {
+
       if (state.status == PhoneStateStatus.CALL_STARTED) {
-        // formatDuration(status.duration!)
-        // state.duration
-        RemarksCubit.callDuration(state.duration);
-        log("-------------------CallStarted-------------");
-        RemarksCubit.callStartTime(DateTime.now());
-        // setState(() {});
+
+        if (callStartTime == null) {
+          callStartTime = DateTime.now();
+        }
+
+
+
+
+        _isCallLogSaved = false;
+
       } else if (state.status == PhoneStateStatus.CALL_ENDED) {
-
-        log("-------------------CallEnded-------------");
-        RemarksCubit.callEndTime(DateTime.now());
-
-        _saveAndSendCallLog();
-
+        if (!_isCallLogSaved) {
+          _isCallLogSaved = true;
+          callEndtTime = DateTime.now();
+          _saveAndSendCallLog();
+        }
       }
     });
   }
 
+
+
+
   Future<void> _saveAndSendCallLog() async {
-    if (RemarksCubit.state.call_start_time != null && RemarksCubit.state.call_end_time != null) {
-      // Duration callDuration = RemarksCubit.state.call_end_time!.difference(callStartTime!);
+    if (callStartTime != null && callEndtTime != null) {
 
-      // String formattedStartTime = candiDateCubit.formatTime(callStartTime!);
-      // String formattedEndTime = candiDateCubit.formatTime(callEndTime!);
-      // String formattedDuration = candiDateCubit.formatDuration(callDuration);
+      Duration callDuration = callEndtTime!.difference(callStartTime!);
 
-      // String formattedDuration = formatDuration(callDuration);
-      //
-      // Map<String, dynamic> callLog = {
-      //   "call_start_time": candiDateCubit.formatTime(callStartTime!), // Format as needed
-      //   "call_end_time": candiDateCubit.formatTime(callEndTime!),     // Format as needed
-      //   "call_duration": formattedDuration // Example: "04:31:30"
-      // };
+      String formattedStartTime = candiDateCubit.formatTime(callStartTime!);
+      String formattedEndTime = candiDateCubit.formatTime(callEndtTime!);
+      String formattedDuration = candiDateCubit.formatDuration(callDuration);
+
+
+
+      Map<String, dynamic> callLog = {
+        "call_start_time": candiDateCubit.formatTime(callStartTime!), // Format as needed
+        "call_end_time": candiDateCubit.formatTime(callEndtTime!),     // Format as needed
+        "call_duration": formattedDuration // Example: "04:31:30"
+      };
 
       // print("📡 Sending Data to API: $callLog");
 
-      // print("Call Log: $callLog");  // Now it correctly shows HH:mm:ss format
-
+      log("Start Time:${callStartTime},,,,,${callEndtTime}");
       RemarksCubit.CallPostRecore(context,
+          callLog: callLog,
           cubit: RemarksCubit,
+
           jdId: candiDateCubit.state.detail!.jdId.toString(),
           mobNo: candiDateCubit.state.detail!.contactNo.toString(),
           candidateid: widget.candiDateId, RecordCallBack: (success) {
         if (success) {
 
           callDetailCubit.getCallDataList(jdId: widget.jdId, mobNo: widget.mobNo);
+          callStartTime=null;
 
         }
       });
