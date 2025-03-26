@@ -231,12 +231,7 @@ var callEndtTime;
 
                     case LoadingError:
                       final networkconnectionlost = state as LoadingError;
-                      return LostinternetConnection(
-                          retry: () {
-                            callDetailCubit.getCallDataList(
-                                jdId: widget.jdId, mobNo: widget.mobNo);
-                          },
-                          messgae: networkconnectionlost.error.toString());
+                      return SizedBox();
 
                     case CallDetailLoadingSuccess:
                       final list = state as CallDetailLoadingSuccess;
