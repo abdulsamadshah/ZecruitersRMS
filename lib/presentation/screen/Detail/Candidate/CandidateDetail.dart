@@ -324,10 +324,10 @@ var callEndtTime;
                 buildDetailRow("JD ID", detail?.jdId ?? "N/A"),
                 buildDetailRow("Mobile", detail?.contactNo ?? "N/A"),
                 buildDetailRow("Gender", detail?.gender ?? "N/A"),
-                buildDetailRow("Remarks", detail?.remarks ?? "N/A"),
+                buildDetailRow("Remarks", detail?.remarkst ?? "N/A"),
                 buildDetailRow(
                   "Total Call Duration",
-                  formatCallDuration(detail?.totalCallDuration ?? "00:00:00"),
+                 detail?.totalCallDuration.toString() ?? "",
                 ),
                 const Divider(),
 
