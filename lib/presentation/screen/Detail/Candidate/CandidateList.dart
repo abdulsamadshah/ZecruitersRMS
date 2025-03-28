@@ -12,6 +12,7 @@ import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 import 'package:zecruiters_rms/presentation/screen/Detail/Candidate/CandidateDetail.dart';
 
 import '../../../../gen/fonts.gen.dart';
+import '../../Widget/CandiDate_widget.dart';
 import 'FilterBottomSheet.dart';
 import 'RecordCall.dart';
 
@@ -37,20 +38,29 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mainAppBar(context, title: "Candidate Lists", type: "basic",      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: reausableIcon(icon: Icons.filter_alt,size: 30,color: Colors.white,ontap: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return FilterBottomSheetsUi(productCubit: candiDateCubit);
+      appBar: mainAppBar(
+        context,
+        title: "Candidate Lists",
+        type: "basic",
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: reausableIcon(
+              icon: Icons.filter_alt,
+              size: 30,
+              color: Colors.white,
+              ontap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return FilterBottomSheetsUi(productCubit: candiDateCubit);
+                  },
+                );
               },
-            );
-
-          },),
-        ),
-      ],),
+            ),
+          ),
+        ],
+      ),
       body: ListView(
         physics: const ClampingScrollPhysics(),
         children: [
@@ -94,21 +104,19 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                           style: BorderStyle.solid,
                           color: ToggleThemeData.Appcolor)),
                   enabledBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(color: ToggleThemeData.Appcolor, width: 1.5.w),
+                      borderSide: BorderSide(
+                          color: ToggleThemeData.Appcolor, width: 1.5.w),
                       borderRadius: BorderRadius.all(Radius.circular(50.r))),
                   disabledBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(color: ToggleThemeData.Appcolor, width: 1.5.w),
+                      borderSide: BorderSide(
+                          color: ToggleThemeData.Appcolor, width: 1.5.w),
                       borderRadius: BorderRadius.all(Radius.circular(50.r))),
                   hintText: "Search CandiDates",
-                  hintStyle: TextStyle(
-                      color:
-                      Colors.black45),
+                  hintStyle: TextStyle(color: Colors.black45),
                   filled: true,
-                  fillColor:  Colors.white,
+                  fillColor: Colors.white,
                   contentPadding:
-                  EdgeInsets.only(top: 0.h, left: 0.w, bottom: 20.h),
+                      EdgeInsets.only(top: 0.h, left: 0.w, bottom: 20.h),
                   suffixIcon: InkWell(
                     onTap: () {
                       Search_Values.text = "";
@@ -130,7 +138,7 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                     fontFamily: FontFamily.interMedium,
                   )),
               style: TextStyle(
-                color:  Colors.black,
+                color: Colors.black,
                 fontFamily: FontFamily.interMedium,
                 fontSize: 15.sp,
               ),
@@ -184,7 +192,6 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
         physics: const ScrollPhysics(),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-
         itemCount: data?.length ?? 10,
         itemBuilder: (ctx, index) {
           final user = data?[index];
@@ -195,9 +202,18 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                 context,
                 MaterialPageRoute(
                   // builder: (context) => RecordCall(),
-                  builder: (context) => CandidateDetailScreen(jdId: user!.jdId.toString(),candiDateId: user.id.toString(),mobNo: user.contactNo.toString(),),
+                  builder: (context) => CandidateDetailScreen(
+                    jdId: user!.jdId.toString(),
+                    candiDateId: user.id.toString(),
+                    mobNo: user.contactNo.toString(),
+                  ),
                 ),
-              );
+              ).then((value) {
+                if(value==true){
+                  candiDateCubit.getCandidateData(
+                      jdId: widget.jdId, listType: widget.listType);
+                }
+              },);
             },
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
@@ -224,46 +240,42 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                               color: Colors.grey[700],
                             ),
                           ),
-                          SizedBox(width: 12.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              reausabletext(
-                                widths: 240,
-                                textoverflow: TextOverflow.ellipsis,
-                                'Name: ${user?.firstName ?? "N/A"} ${user?.lastName ?? ""}',
-                                fontsize: 16,
-                                fontweight: FontWeight.bold,
-                              ),
-                              SizedBox(height: 4.h),
-                              reausabletext(
-                                widths: 240,
-                                maxline: 2,
-                                'Email: ${user?.emailId ?? "N/A"}',
-                                fontsize: 14,
-                                color: Colors.grey[700],
-                              ),
-                              SizedBox(height: 4.h),
-                              reausabletext(
-                                'Mobile: ${user?.contactNo ?? "N/A"}',
-                                fontsize: 14,
-                                color: Colors.grey[700],
-                              ),
-
-                              SizedBox(height: 4.h),
-                              reausabletext(
-                                'JD ID: ${user?.jdId ?? "N/A"}', // Display JD ID
-                                fontsize: 14,
-                                color: Colors.grey[700],
-                              ),
-                              SizedBox(height: 4.h),
-                              reausabletext(
-                                'Total Call Duration: ${user?.totalCallDuration ?? "N/A"}', // Display call duration
-                                fontsize: 14,
-                                color: Colors.grey[700],
-                              ),
-                            ],
+                          SizedBox(
+                            width: 10.w,
                           ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildDetailRow("Name",
+                                    '${user?.firstName ?? "N/A"} ${user?.lastName ?? ""}',
+                                    height: 3, color: Colors.black),
+                                buildDetailRow(
+                                    "Email", '${user?.emailId ?? "N/A"}',
+                                    height: 3, color: Colors.black),
+                                buildDetailRow(
+                                    "Mobile", '${user?.contactNo ?? "N/A"}',
+                                    height: 3, color: Colors.black),
+                                buildDetailRow(
+                                    "JD ID", '${user?.jdId ?? "N/A"}',
+                                    height: 3, color: Colors.black),
+                                buildDetailRow("Total Call Duration",
+                                    '${user?.totalCallDuration ?? "N/A"}',
+                                    height: 3, color: Colors.black),
+                                user?.remarkst == ""
+                                    ? SizedBox()
+                                    : buildDetailRow(
+                                        "Remarks", '${user?.remarkst ?? ""}',
+                                        height: 3, color: Colors.black),
+                                user?.remarks == ""
+                                    ? SizedBox()
+                                    : buildDetailRow(
+                                        "Comment", '${user?.remarks ?? ""}',
+                                        height: 3, color: Colors.black),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
                         ],
                       ),
                       SizedBox(height: 12.h),
@@ -274,8 +286,8 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                             icon: Icons.call,
                             color: Colors.green,
                             onTap: () async {
-                              candiDateCubit.makePhoneCall(user?.contactNo ?? "");
-
+                              candiDateCubit
+                                  .makePhoneCall(user?.contactNo ?? "");
                             },
                           ),
                           _buildIconButton(
@@ -311,11 +323,12 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
               ),
             ),
           );
-        },       separatorBuilder: (context, index) {
-        return const SizedBox(
-          height: 10,
-        );
-      },
+        },
+        separatorBuilder: (context, index) {
+          return const SizedBox(
+            height: 10,
+          );
+        },
       ),
     );
   }

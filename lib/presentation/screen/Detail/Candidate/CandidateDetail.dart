@@ -179,7 +179,7 @@ var callEndtTime;
   Widget build(BuildContext context) {
     return BlocProvider(
       child: Scaffold(
-          appBar: mainAppBar(context, title: widget.candiDateId, type: "basic"),
+          appBar: mainAppBar(context, title: widget.candiDateId, type: "basic",),
           body: ListView(
             children: [
               BlocConsumer<CandiDateCubit, CandiDateState>(
@@ -324,7 +324,8 @@ var callEndtTime;
                 buildDetailRow("JD ID", detail?.jdId ?? "N/A"),
                 buildDetailRow("Mobile", detail?.contactNo ?? "N/A"),
                 buildDetailRow("Gender", detail?.gender ?? "N/A"),
-                buildDetailRow("Remarks", detail?.remarkst ?? "N/A"),
+                detail?.remarkst==''?SizedBox(): buildDetailRow("Remarks", detail?.remarkst ?? "N/A"),
+                detail?.remarks==""?SizedBox():buildDetailRow("Comment", detail?.remarks ?? "N/A"),
                 buildDetailRow(
                   "Total Call Duration",
                  detail?.totalCallDuration.toString() ?? "",

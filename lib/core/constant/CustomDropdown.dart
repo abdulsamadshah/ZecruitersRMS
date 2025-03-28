@@ -35,6 +35,7 @@ class CustomDropdown extends StatelessWidget {
         padding: EdgeInsets.only(left: 15.w, right: 10.w),
         child: DropdownSearch<RemakListData>(
           popupProps: PopupProps.menu(
+
             showSearchBox: showSearchBox,
             searchFieldProps: TextFieldProps(
               decoration: InputDecoration(
@@ -51,7 +52,10 @@ class CustomDropdown extends StatelessWidget {
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
                 fillColor: Colors.white,
+
+
               ),
+
             ),
             showSelectedItems: true,
             menuProps: MenuProps(
@@ -88,6 +92,13 @@ class CustomDropdown extends StatelessWidget {
           items: items,
           selectedItem: selectedItem,
           compareFn: (a, b) => a.id == b.id,
+          filterFn: (item, filter) {
+            return item.remarks!.toLowerCase().contains(filter.toLowerCase());
+          },
+
+
+          itemAsString: (item) => item.remarks ?? "Unknown",
+
           dropdownDecoratorProps: DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
               hintText: hintText,
@@ -112,6 +123,9 @@ class CustomDropdown extends StatelessWidget {
               ),
             );
           },
+
+
+
           onChanged: onChanged,
         ),
       ),

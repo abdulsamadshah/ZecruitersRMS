@@ -18,9 +18,9 @@ String getInitials({CandiDateDetail? detail}) {
 }
 
 // Detail Row Widget
-Widget buildDetailRow(String label, String value) {
+Widget buildDetailRow(String label, String value,{int height=6,Color color =Colors.indigo}) {
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: 6.h),
+    padding: EdgeInsets.symmetric(vertical: height.h),
     child: Row(
       children: [
         Text(
@@ -28,7 +28,7 @@ Widget buildDetailRow(String label, String value) {
           style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.bold,
-            color: Colors.indigo,
+            color: color,
           ),
         ),
         SizedBox(width: 8.w),
