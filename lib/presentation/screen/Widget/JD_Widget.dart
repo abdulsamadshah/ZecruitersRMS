@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:zecruiters_rms/core/theme/themes_data.dart';
-import 'package:zecruiters_rms/data/models/JDListResponse.dart';
+import 'package:zecruiters_rms/data/models/CallDetailRes.dart';
 import 'package:zecruiters_rms/data/models/JobDetailResponse.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
+
+import 'CandiDate_widget.dart';
 
 Widget buildHeaderCell(String title, int width) {
   return reausabletext(
@@ -50,8 +51,7 @@ class JobDetailUi extends StatelessWidget {
   Job_DetailData? detail;
   final bool isLoading;
 
-  JobDetailUi({Key? key, this.detail, this.isLoading = false})
-      : super(key: key);
+  JobDetailUi({super.key, this.detail, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -229,3 +229,67 @@ class JobDetailUi extends StatelessWidget {
         fontsize: 17, fontweight: FontWeight.bold, color: Colors.blueGrey);
   }
 }
+
+
+
+Widget CallListUi({List<CallDetail>? data, bool isLoading = false}) {
+  return Skeletonizer(
+    enabled: isLoading,
+    child: ListView.builder(
+      physics: const ClampingScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: data?.length ?? 0,
+      itemBuilder: (ctx, index) {
+        final callDetail = data?[index];
+
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
+          child: Card(
+            elevation: 5,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(7.r),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(16.r),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Call Record Header
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.phone, color: Colors.green, size: 32.r),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildTextRow('Mobile', callDetail?.mobileNo),
+                            buildTextRow(
+                              'Call Duration',
+                              callDetail?.callDuration ?? "00:00",
+                            ),
+                            buildTextRow(
+                              'Call By',
+                              callDetail?.callBy ?? "N/A",
+                            ),
+                            buildTextRow(
+                              'Date & Time',
+                              callDetail?.dateTime ?? "N/A",
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
+
