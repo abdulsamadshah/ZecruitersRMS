@@ -333,8 +333,8 @@ class CandiDateCubit extends Cubit<CandiDateState> {
 
     var status = await Permission.phone.request();
     if (status.isGranted) {
-      CallHelper.makeDirectCall("7387454586");
-      // CallHelper.makeDirectCall(phone);
+      // CallHelper.makeDirectCall("7387454586");
+      CallHelper.makeDirectCall(phone);
     } else {
       throw 'Phone call permission not granted';
     }

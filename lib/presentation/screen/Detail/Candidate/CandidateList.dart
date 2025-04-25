@@ -28,6 +28,7 @@ class CandidateListScreen extends StatefulWidget {
 
 class _CandidatedetailScreenState extends State<CandidateListScreen> {
   final CandiDateCubit candiDateCubit = CandiDateCubit();
+  final CandiDateCubit RemarksCubit = CandiDateCubit();
   TextEditingController Search_Values = TextEditingController();
   @override
   void initState() {
@@ -283,14 +284,7 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // _buildIconButton(
-                          //   icon: Icons.call,
-                          //   color: Colors.green,
-                          //   onTap: () async {
-                          //     candiDateCubit
-                          //         .makePhoneCall(user?.contactNo ?? "");
-                          //   },
-                          // ),
+
                           _buildIconButton(
                             icon: Icons.email,
                             color: Colors.blue,
@@ -308,6 +302,32 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                             color: Colors.teal,
                             onTap: () async {
                               CallHelper().launchWhatsAppChooser("${user?.contactNo}");
+                            },
+                          ),
+
+                          _buildIconButton(
+                            icon: Icons.edit,
+                            color: Colors.green,
+                            onTap: () async {
+                              RemarksCubit.SelectedRemarks({
+                                // 'id':"15",
+                                'id': user?.remarkstid.toString(),
+                                'remarks': user?.remarkst.toString()
+                              });
+                              RemarksCubit.comments.text = user!.remarks!.toString();
+                              RemarksCubit.getReMarkList(
+                                context,
+                                cubit: RemarksCubit,
+                                jdId: user!.jdId.toString(),
+                                mobNo: user.contactNo.toString(),
+                                candidateid: user.id,
+                                RemarkCallBack: (success) {
+                                  if (success) {
+                                    candiDateCubit.getCandidateData(
+                                        jdId: widget.jdId, listType: widget.listType);
+                                  }
+                                },
+                              );
                             },
                           ),
                         ],
