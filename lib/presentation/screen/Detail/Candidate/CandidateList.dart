@@ -6,6 +6,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/common_widget/appBar.dart';
 import 'package:zecruiters_rms/core/theme/themes_data.dart';
+import 'package:zecruiters_rms/data/Services/CallHelper.dart';
 import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
 import 'package:zecruiters_rms/logic/bloc/CandiDate/candi_date_cubit.dart';
 import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
@@ -282,14 +283,14 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildIconButton(
-                            icon: Icons.call,
-                            color: Colors.green,
-                            onTap: () async {
-                              candiDateCubit
-                                  .makePhoneCall(user?.contactNo ?? "");
-                            },
-                          ),
+                          // _buildIconButton(
+                          //   icon: Icons.call,
+                          //   color: Colors.green,
+                          //   onTap: () async {
+                          //     candiDateCubit
+                          //         .makePhoneCall(user?.contactNo ?? "");
+                          //   },
+                          // ),
                           _buildIconButton(
                             icon: Icons.email,
                             color: Colors.blue,
@@ -306,13 +307,7 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                             icon: FontAwesomeIcons.whatsapp,
                             color: Colors.teal,
                             onTap: () async {
-                              String url =
-                                  "https://wa.me/${user?.contactNo ?? ""}";
-                              if (await canLaunch(url)) {
-                                await launch(url);
-                              } else {
-                                throw 'Could not open WhatsApp.';
-                              }
+                              CallHelper().launchWhatsAppChooser("${user?.contactNo}");
                             },
                           ),
                         ],

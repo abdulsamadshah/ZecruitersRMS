@@ -1,13 +1,14 @@
-import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CallHelper {
   static const MethodChannel _platform = MethodChannel('direct_call');
 
   static Future<void> makeDirectCall(String phoneNumber) async {
     try {
-      await _platform.invokeMethod('makeDirectCall', {'phoneNumber': phoneNumber});
+      await _platform.invokeMethod(
+          'makeDirectCall', {'phoneNumber': phoneNumber});
     } on PlatformException catch (e) {
       print("Error making call: ${e.message}");
     }
@@ -15,18 +16,26 @@ class CallHelper {
 
 
   void launchWhatsAppChooser(String phone) async {
-    final String phoneNumber = phone.replaceAll('+', '').replaceAll(' ', '');
+
+    final Uri whatsappUri = Uri.parse("https://wa.me/+91$phone");
 
     try {
-      final intent = AndroidIntent(
-        action: 'android.intent.action.SEND',
-        type: 'text/plain',
-        data: Uri.encodeFull("https://wa.me/$phoneNumber"),
-        package: null, // null shows a chooser
-      );
-      await intent.launch();
-    }  catch (e) {
+      if (await canLaunchUrl(whatsappUri)) {
+        await launchUrl(
+          whatsappUri,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        debugPrint("Could not launch WhatsApp URL");
+      }
+    } catch (e) {
       debugPrint("Error launching WhatsApp: $e");
     }
   }
+
+
+
+
+
+
 }

@@ -8,7 +8,7 @@ import 'package:zecruiters_rms/presentation/common_widget/common_widget.dart';
 
 
 PreferredSize mainAppBar(BuildContext context,
-    {String? title, bool centerTitle = true,String? type,bool isLeading=true,List<Widget>? actions}) {
+    {String? title, bool centerTitle = true,String? type,bool isLeading=true,List<Widget>? actions,bool? popValue}) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(kToolbarHeight),
     child: Container(
@@ -30,7 +30,7 @@ PreferredSize mainAppBar(BuildContext context,
           padding: EdgeInsets.only(left: 15.w),
           child: InkWell(
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(context,popValue);
             },
             child: type=="basic"?reausableIcon(
               icon: Icons.arrow_back_ios_outlined,

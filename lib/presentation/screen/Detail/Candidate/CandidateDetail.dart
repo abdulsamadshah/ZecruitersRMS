@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,7 +21,7 @@ import 'package:zecruiters_rms/presentation/screen/Widget/JD_Widget.dart';
 import '../../../common_widget/common_widget.dart';
 
 class CandidateDetailScreen extends StatefulWidget {
-  String jdId, candiDateId, mobNo;
+  final String jdId, candiDateId, mobNo;
 
   CandidateDetailScreen(
       {Key? key,
@@ -35,18 +34,18 @@ class CandidateDetailScreen extends StatefulWidget {
   State<CandidateDetailScreen> createState() => _CandidateDetailScreenState();
 }
 
-class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
+class _CandidateDetailScreenState extends State<CandidateDetailScreen>
+    with WidgetsBindingObserver {
   final CandiDateCubit RemarksCubit = CandiDateCubit();
   final CandiDateCubit candiDateCubit = CandiDateCubit();
   final CandiDateCubit callDetailCubit = CandiDateCubit();
 
   StreamSubscription<PhoneState>? _phoneStateSubscription;
-
-
   bool granted = false;
-  var isCallOngoing = false;
+  bool isCallOngoing = false;
   var callStartTime;
   var callEndtTime;
+  bool _isCallLogSaved = false;
   Timer? _timer;
   int elapsedTimeInSeconds = 0;
   var phoneNumber = '';
@@ -71,6 +70,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     candiDateCubit.getCandidateDetailData(
         jdid: widget.jdId,
@@ -81,9 +81,12 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     _listenForCallEvents();
   }
 
-  void onClose() {
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _phoneStateSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _requestPermissions() async {
@@ -94,21 +97,18 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
     ].request();
   }
 
-  bool _isCallLogSaved = false;
-
   void _listenForCallEvents() {
     _phoneStateSubscription?.cancel();
     _phoneStateSubscription =
         PhoneState.stream.listen((PhoneState state) async {
       if (state.status == PhoneStateStatus.CALL_STARTED) {
         callStartTime ??= DateTime.now();
-
         _isCallLogSaved = false;
       } else if (state.status == PhoneStateStatus.CALL_ENDED) {
         if (!_isCallLogSaved) {
-          _isCallLogSaved = true;
           callEndtTime = DateTime.now();
           _saveAndSendCallLog();
+          _isCallLogSaved = true;
         }
       }
     });
@@ -120,37 +120,57 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
       String formattedDuration = candiDateCubit.formatDuration(callDuration);
 
       Map<String, dynamic> callLog = {
-        "call_start_time":
-            candiDateCubit.formatTime(callStartTime!), // Format as needed
-        "call_end_time":
-            candiDateCubit.formatTime(callEndtTime!), // Format as needed
-        "call_duration": formattedDuration // Example: "04:31:30"
+        "call_start_time": candiDateCubit.formatTime(callStartTime!),
+        "call_end_time": candiDateCubit.formatTime(callEndtTime!),
+        "call_duration": formattedDuration
       };
-      log("Start Time:${callStartTime},,,,,${callEndtTime}");
-      RemarksCubit.CallPostRecore(context,
-          callLog: callLog,
-          cubit: RemarksCubit,
-          jdId: candiDateCubit.state.detail!.jdId.toString(),
-          mobNo: candiDateCubit.state.detail!.contactNo.toString(),
-          candidateid: widget.candiDateId, RecordCallBack: (success) {
-        if (success) {
-          callDetailCubit.getCallDataList(
-              jdId: widget.jdId, mobNo: widget.mobNo);
-          callStartTime = null;
-        }
-      });
+
+      log("Saving Call Log - Start: $callStartTime, End: $callEndtTime, Duration: $formattedDuration");
+
+      RemarksCubit.CallPostRecore(
+        context,
+        callLog: callLog,
+        cubit: RemarksCubit,
+        jdId: candiDateCubit.state.detail?.jdId.toString() ?? "",
+        mobNo: candiDateCubit.state.detail?.contactNo.toString() ?? "",
+        candidateid: widget.candiDateId,
+        RecordCallBack: (success) {
+          if (success) {
+            callDetailCubit.getCallDataList(
+                jdId: widget.jdId, mobNo: widget.mobNo);
+            callStartTime = null;
+            callEndtTime = null;
+            _isCallLogSaved = false;
+          } else {
+            log("Call log save failed.");
+          }
+        },
+      );
+    } else {
+      log("Call start or end time is null. Start: $callStartTime, End: $callEndtTime");
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      log("App resumed. Refreshing call data.");
+      callDetailCubit.getCallDataList(jdId: widget.jdId, mobNo: widget.mobNo);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      child: Scaffold(
-          appBar: mainAppBar(
-            context,
-            title: widget.candiDateId,
-            type: "basic",
-          ),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return true;
+      },
+      child: BlocProvider(
+        create: (context) => RemarksCubit,
+        child: Scaffold(
+          appBar: mainAppBar(context,
+              title: widget.candiDateId, type: "basic", popValue: true),
           body: ListView(
             children: [
               BlocConsumer<CandiDateCubit, CandiDateState>(
@@ -201,7 +221,7 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       return CallListUi(isLoading: true);
 
                     case LoadingError:
-                      return SizedBox();
+                      return const SizedBox();
 
                     case CallDetailLoadingSuccess:
                       final list = state as CallDetailLoadingSuccess;
@@ -219,8 +239,9 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                 },
               ),
             ],
-          )),
-      create: (context) => RemarksCubit,
+          ),
+        ),
+      ),
     );
   }
 
@@ -296,15 +317,16 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                 buildDetailRow("Mobile", detail?.contactNo ?? "N/A"),
                 buildDetailRow("Gender", detail?.gender ?? "N/A"),
                 detail?.remarkst == ''
-                    ? SizedBox()
+                    ? const SizedBox()
                     : buildDetailRow("Remarks", detail?.remarkst ?? "N/A"),
                 detail?.remarks == ""
-                    ? SizedBox()
+                    ? const SizedBox()
                     : buildDetailRow("Comment", detail?.remarks ?? "N/A"),
                 buildDetailRow(
                   "Total Call Duration",
-                  detail?.totalCallDuration.toString() ?? "",
+                  detail?.totalCallDuration?.toString() ?? "N/A",
                 ),
+
                 const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -333,14 +355,8 @@ class _CandidateDetailScreenState extends State<CandidateDetailScreen> {
                       icon: FontAwesomeIcons.whatsapp,
                       color: Colors.teal,
                       onTap: () async {
-                        CallHelper().launchWhatsAppChooser("91${detail?.contactNo}"); // your phone number
-
-                        // String url = "https://wa.me/${detail?.contactNo ?? ""}";
-                        // if (await canLaunch(url)) {
-                        //   await launch(url);
-                        // } else {
-                        //   throw 'Could not open WhatsApp.';
-                        // }
+                        CallHelper().launchWhatsAppChooser(
+                            "${detail?.contactNo}"); // your phone number
                       },
                     ),
                   ],
