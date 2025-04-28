@@ -39,7 +39,7 @@ class CandiDateData {
   String? resumeName;
   String? remarks;
   String? remarkst;
-  String? remarkstid;
+  String? remarksid;
   String? totalCallDuration;
 
   CandiDateData(
@@ -54,7 +54,7 @@ class CandiDateData {
       this.resumeName,
       this.remarks,
       this.remarkst,
-      this.remarkstid,
+      this.remarksid,
       this.totalCallDuration});
 
   CandiDateData.fromJson(Map<String, dynamic> json) {
@@ -70,7 +70,7 @@ class CandiDateData {
     remarks = json['remarks'];
     remarkst = json['remarkst'];
     totalCallDuration = json['total_call_duration'];
-    remarkstid = json['remarkstid'];
+    remarksid = json['remarksid'];
   }
 
   Map<String, dynamic> toJson() {
@@ -87,7 +87,7 @@ class CandiDateData {
     data['remarks'] = this.remarks;
     data['remarkst'] = this.remarkst;
     data['total_call_duration'] = this.totalCallDuration;
-    data['remarkstid'] = this.remarkstid;
+    data['remarkstid'] = this.remarksid;
     return data;
   }
 }

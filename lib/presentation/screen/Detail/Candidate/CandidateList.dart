@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zecruiters_rms/core/common_widget/appBar.dart';
+import 'package:zecruiters_rms/core/constant/utility.dart';
 import 'package:zecruiters_rms/core/theme/themes_data.dart';
 import 'package:zecruiters_rms/data/Services/CallHelper.dart';
 import 'package:zecruiters_rms/data/models/CandiDateListRes.dart';
@@ -261,16 +262,18 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                                 buildDetailRow(
                                     "JD ID", '${user?.jdId ?? "N/A"}',
                                     height: 3, color: Colors.black),
-                                buildDetailRow("Total Call Duration",
-                                    '${user?.totalCallDuration ?? "N/A"}',
+                                Utility.isNullEmptyOrFalse(  user?.totalCallDuration)?
+                                const SizedBox()
+                                    :buildDetailRow("Total Call Duration",
+                                    user?.totalCallDuration ?? "N/A",
                                     height: 3, color: Colors.black),
-                                user?.remarkst == ""
-                                    ? SizedBox()
+                                Utility.isNullEmptyOrFalse(  user?.remarkst)?
+                                const SizedBox()
                                     : buildDetailRow(
                                         "Remarks", '${user?.remarkst ?? ""}',
                                         height: 3, color: Colors.black),
-                                user?.remarks == ""
-                                    ? SizedBox()
+                              Utility.isNullEmptyOrFalse(  user?.remarks)
+                                    ? const SizedBox()
                                     : buildDetailRow(
                                         "Comment", '${user?.remarks ?? ""}',
                                         height: 3, color: Colors.black),
@@ -311,7 +314,7 @@ class _CandidatedetailScreenState extends State<CandidateListScreen> {
                             onTap: () async {
                               RemarksCubit.SelectedRemarks({
                                 // 'id':"15",
-                                'id': user?.remarkstid.toString(),
+                                'id': user?.remarksid.toString(),
                                 'remarks': user?.remarkst.toString()
                               });
                               RemarksCubit.comments.text = user!.remarks!.toString();
