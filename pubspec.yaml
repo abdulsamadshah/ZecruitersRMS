@@ -44,6 +44,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   record: ^5.2.0
   just_audio: ^0.9.44
+  flutter_phone_direct_caller: ^2.2.1
 #  android_intent_plus: ^3.0.0
 
 #  flutter_sound: ^9.20.5

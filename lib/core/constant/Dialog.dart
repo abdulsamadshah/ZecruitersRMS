@@ -143,7 +143,6 @@ class DialogBox {
                               SizedBox(
                                 height: 15.h,
                               ),
-
                               reausabletext("Enter Comment"),
                               SizedBox(
                                 height: 5.h,

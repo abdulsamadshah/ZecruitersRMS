@@ -305,7 +305,7 @@ class CandiDateCubit extends Cubit<CandiDateState> {
       var result = await CandiDate_Repo.postCallRecordStore(data);
       if (result.status == true) {
         Loading().dismissloading(context);
-        Utils.fluttertoast("Submit Successfully");
+        // Utils.fluttertoast("Submit Successfully");
         RecordCallBack!(true);
       } else {
         Loading().dismissloading(context);

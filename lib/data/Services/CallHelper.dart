@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class CallHelper {
-  static const MethodChannel _platform = MethodChannel('direct_call');
+
 
   static Future<void> makeDirectCall(String phoneNumber) async {
     try {
-      await _platform.invokeMethod(
-          'makeDirectCall', {'phoneNumber': phoneNumber});
+     await FlutterPhoneDirectCaller.callNumber(phoneNumber);
     } on PlatformException catch (e) {
       print("Error making call: ${e.message}");
     }
